@@ -4,7 +4,7 @@
 #include <QDebug>
 #include "wificonfigwidgetbase.h"
 #include "ui_wificonfigwidgetbase.h"
-#include "../../../config.h"
+#define PREFIX QString("/usr/local")
 
 int main( int argc, char ** argv )
 {

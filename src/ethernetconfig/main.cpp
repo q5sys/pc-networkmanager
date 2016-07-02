@@ -30,7 +30,7 @@
 #include <qdesktopwidget.h>
 #include <qtextcodec.h>
 #include <QApplication>
-#include "../../../config.h"
+#define PREFIX QString("/usr/local")
 
 int main(int argc, char **argv)
 {

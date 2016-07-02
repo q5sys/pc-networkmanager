@@ -25,11 +25,12 @@
 
 #include "networkman.h"
 #include "ui_networkman.h"
-#include "../../../config.h"
 #include "dnslist.h"
 
 // Set our max number of wlan[0-9] devices we'll support
 #define MAX_WLAN_DEVICES 10
+
+#define PREFIX QString("/usr/local")
 
 using namespace std;
 

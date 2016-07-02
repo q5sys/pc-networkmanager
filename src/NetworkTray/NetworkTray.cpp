@@ -14,11 +14,11 @@
 #include "NetworkTray.h"
 #include <trueos-netif.h>
 #include <trueos-utils.h>
-#include "../../../config.h"
-
 
 /* Update interval in ms */
 #define  UPDATE_MSEC 15000
+
+#define PREFIX QString("/usr/local")
 
 // Public Variables
 QString DeviceName;

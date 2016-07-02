@@ -11,9 +11,8 @@
 #include <QTextCodec>
 
 #include <NetworkTray.h>
-#include "../../../config.h"
 #include <unistd.h>
-
+#define PREFIX QString("/usr/local")
 
 
 int  main(int argc, char *argv[]) {
