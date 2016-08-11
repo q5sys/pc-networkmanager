@@ -220,24 +220,25 @@ QString NetworkTray::getSignalStrengthForIdent( QString ident )
   tmp = line.simplified();
 
   // Lets find the signal strength / noise variables now
-  tmp.remove(0, tmp.indexOf(":"));
-  tmp.remove(0, tmp.indexOf(" "));
+  tmp = tmp.section(" ",4,4);
+ // tmp.remove(0, tmp.indexOf(":"));
+  //tmp.remove(0, tmp.indexOf(" "));
 
   // Get the noise
-  noise = tmp.simplified();
-  noise.remove(0, noise.lastIndexOf(":") + 1);
-  noise.remove(noise.indexOf(" "), noise.size());
-  noise = noise.simplified();
-  if ( noise.indexOf("-") == 0)
-	noise.remove(0, 1);
+  noise = tmp.section(":",1,-1).simplified();
+  //noise.remove(0, noise.lastIndexOf(":") + 1);
+  //noise.remove(noise.indexOf(" "), noise.size());
+  //noise = noise.simplified();
+  //if ( noise.indexOf("-") == 0)
+	//noise.remove(0, 1);
 
   // Get the signal
-  sig = tmp.simplified();
-  sig.remove(sig.indexOf(":"), sig.size());
-  sig.remove(0, sig.lastIndexOf(" "));
-  sig = sig.simplified();
-  if ( sig.indexOf("-") == 0)
-	sig.remove(0, 1);
+  sig = tmp.section(":",0,0).simplified();
+  //sig.remove(sig.indexOf(":"), sig.size());
+  //sig.remove(0, sig.lastIndexOf(" "));
+  //sig = sig.simplified();
+  //if ( sig.indexOf("-") == 0)
+	//sig.remove(0, 1);
 
   //qDebug() << "Signal:" << sig << " Noise:" << noise;
 
@@ -245,7 +246,8 @@ QString NetworkTray::getSignalStrengthForIdent( QString ident )
   isig = sig.toInt(&ok);
   inoise = noise.toInt(&ok2);
   if ( ok && ok2 ) {
-     percent = (inoise - isig) * 4;
+     percent = (qAbs(isig) - qAbs(inoise)) * 4;
+  qDebug() << "Sig/Noise Calc:" << tmp << sig << noise << percent;
      // Sanity check
      if ( percent > 100 )
 	percent = 100;
@@ -255,7 +257,6 @@ QString NetworkTray::getSignalStrengthForIdent( QString ident )
   } else {
      tmp = "";
   }
-
   return tmp;	
 }
 
