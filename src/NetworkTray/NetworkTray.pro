@@ -9,6 +9,9 @@ HEADERS	+= NetworkTray.h netKey.h
 
 SOURCES	+= main.cpp NetworkTray.cpp netKey.cpp
 
+#Include the backend classes for probing network info
+include("../backend/backend.pri")
+
 FORMS	+= netKey.ui
 
 TRANSLATIONS =  i18n/NetworkTray_af.ts \

@@ -21,21 +21,21 @@
 #define PREFIX QString("/usr/local")
 
 // Public Variables
-QString DeviceName;
-QString DeviceType;
-QString DeviceParent;
-QString DeviceIP;
-QString DeviceIPv6;
-QString DeviceMAC;
+//QString DeviceName;
+//QString DeviceType;
+//QString DeviceParent;
+//QString DeviceIP;
+//QString DeviceIPv6;
+//QString DeviceMAC;
 QString DeviceSSID;
 QString DeviceSignalStrength = "";
 int 	DeviceSavedStrength = 0;
 QString DeviceWirelessSpeed = "";
-QString DeviceStatus;
-QString DeviceUpStatus;
-QString DeviceIdent;
-QString DeviceNetmask;
-QString DeviceMedia;
+//QString DeviceStatus;
+//QString DeviceUpStatus;
+//QString DeviceIdent;
+//QString DeviceNetmask;
+//QString DeviceMedia;
 QString username;
 
 void NetworkTray::programInit(QString Device)
@@ -45,10 +45,11 @@ void NetworkTray::programInit(QString Device)
 
   QString tmp;
   QIcon Icon;
-  DeviceName = Device;
-  DeviceType = getTypeForIdent(DeviceName);
+  DEVICE = new backend::NetDevice(Device);
+ // DeviceName = Device;
+  //DeviceType = getTypeForIdent(DeviceName);
 
-  QString cmd = IFCONFIG + " lagg0 2>/dev/null | grep " + DeviceName;
+  QString cmd = IFCONFIG + " lagg0 2>/dev/null | grep " + Device;
   QString checkLagg = getLineFromCommandOutput(cmd.toLatin1());
   if ( ! checkLagg.isEmpty() )
     usingLagg = true;
@@ -60,15 +61,15 @@ void NetworkTray::programInit(QString Device)
   username = QString::fromLocal8Bit(getenv("LOGNAME"));
   
   // Confirm this is a legit device
-  confirmDevice(DeviceName); 
+  confirmDevice(Device); 
 
   // Update the ifconfig line we will be parsing
   slotUpdateIfStatus();
 
   // Get the MAC for this device
-  DeviceMAC=getMacForIdent(DeviceName);
+  //DeviceMAC=getMacForIdent(DeviceName);
 
-  if ( DeviceName.indexOf("wlan") != -1 )
+  /*if ( DeviceName.indexOf("wlan") != -1 )
   {
      DeviceParent = getWifiParent(DeviceName);
 
@@ -80,7 +81,7 @@ void NetworkTray::programInit(QString Device)
        DeviceIdent = tr("Unknown Wireless Device");
   } else {
       DeviceIdent = getNameForIdent( DeviceName );
-  }
+  }*/
 
   trayIcon = new QSystemTrayIcon(this);
   
@@ -103,12 +104,12 @@ void NetworkTray::programInit(QString Device)
 
 
 // Function which locates the parent device of a wlan child device
-QString NetworkTray::getWifiParent(QString dev)
+/*QString NetworkTray::getWifiParent(QString dev)
 {
    dev.remove(0, dev.size() -1 );
    QString DevNum = dev;
    return trueos::Utils::sysctl("net.wlan." + DevNum + ".%parent");
-}
+}*/
 
 void NetworkTray::confirmDevice( QString device )
 {
@@ -139,14 +140,14 @@ QString NetworkTray::getLineFromCommandOutput( QString command )
 }
 
 
-QString NetworkTray::getNameForIdent( QString ident )
+/*QString NetworkTray::getNameForIdent( QString ident )
 {
   NetworkInterface ifr(ident);
   return ifr.desc();
-}
+}*/
 
 
-QString NetworkTray::getIpForIdent()
+/*QString NetworkTray::getIpForIdent()
 {
   QString inputLine = ifconfigOutput;
   QString ip= "";
@@ -173,14 +174,14 @@ QString NetworkTray::getIpForIdent()
   }
 	
   return ip;
-}
+}*/
 
 
-QString NetworkTray::getMacForIdent( QString ident )
+/*QString NetworkTray::getMacForIdent( QString ident )
 {
   NetworkInterface ifr(ident);
   return ifr.macAsString();
-}
+}*/
 
 QString NetworkTray::getSSIDForIdent()
 {
@@ -195,7 +196,7 @@ QString NetworkTray::getSSIDForIdent()
   return SSID;
 }
 
-QString NetworkTray::getNetmaskForIdent()
+/*QString NetworkTray::getNetmaskForIdent()
 {
   QString inputLine = ifconfigOutput;
   QString netmask= "";
@@ -206,7 +207,7 @@ QString NetworkTray::getNetmaskForIdent()
   }
 	
   return netmask;
-}
+}*/
 
 QString NetworkTray::getSignalStrengthForIdent( QString ident )
 {
@@ -288,17 +289,17 @@ void NetworkTray::slotTrayActivated(QSystemTrayIcon::ActivationReason reason) {
 
 void  NetworkTray::openConfigDlg() {
 
-  if ( DeviceType == "Ethernet" )
+  if ( !DEVICE->isWireless() )
   {
     QString program = "sudo";
     QStringList arguments;
-    arguments << "pc-ethernetconfig" << DeviceName;
+    arguments << "pc-ethernetconfig" << DEVICE->device();
     QProcess *runCommandProc = new QProcess(this);
     runCommandProc->start(program, arguments);
   } else {
     QString program = "sudo";
     QStringList arguments;
-    arguments << "pc-wificonfig" << DeviceName;
+    arguments << "pc-wificonfig" << DEVICE->device();
     QProcess *runCommandProc = new QProcess(this);
     runCommandProc->start(program, arguments);
   }
@@ -308,18 +309,20 @@ void  NetworkTray::openConfigDlg() {
 void  NetworkTray::displayTooltip() {
 
   QString  tooltipStr;
-  tooltipStr = QString(tr("Device Name:") + " /dev/" + DeviceName);
-  tooltipStr += "<br>" + DeviceIdent +"<hr>";
-  if ( DeviceType == "Ethernet" )
-  {
+  tooltipStr = QString(tr("Device Name:") + " /dev/" + DEVICE->device());
+  tooltipStr += "<br>" + DEVICE->desc() +"<hr>";
+  QString DeviceStatus = DEVICE->mediaStatusAsString();
+  QString DeviceMedia = getMediaForIdent();
+  if ( !DEVICE->isWireless() )  {
+    //WIRED DEVICE
      if ( DeviceStatus == "active" || DeviceStatus == "" ) {
-       tooltipStr += "<br>" + tr("IP:") + " " + DeviceIP;
-       tooltipStr += "<br>" + tr("IPv6:") + " " + DeviceIPv6;
-       tooltipStr += "<br>" + tr("Mac/Ether:") + " " + DeviceMAC;
+       tooltipStr +=  tr("IP:") + " " + DEVICE->ipAsString();
+       tooltipStr += "<br>" + tr("IPv6:") + " " + DEVICE->ipv6AsString();
+       tooltipStr += "<br>" + tr("Mac/Ether:") + " " + DEVICE->macAsString();
        tooltipStr += "<br>" + tr("Media:") + " " + DeviceMedia;
-       tooltipStr += "<br>" + tr("Status:") + " " + DeviceUpStatus;
+       tooltipStr += "<br>" + tr("Status:") + " " + (DEVICE->isUp() ? "UP" : "DOWN");
      } else {
-       tooltipStr += "<br>" + tr("Mac/Ether:") + " " + DeviceMAC;
+       tooltipStr +=  tr("Mac/Ether:") + " " + DEVICE->macAsString();
        tooltipStr += "<br>" + tr("Media:") + " " + DeviceMedia;
        tooltipStr += "<br>" + tr("Status:") + " " + DeviceStatus;
        tooltipStr += "<br>" + tr("No connection detected.<br> Check your cable connection and try again!");
@@ -328,16 +331,16 @@ void  NetworkTray::displayTooltip() {
    } else {
      // If this is a wireless device, give different output
      if ( DeviceStatus == "associated" ) {
-	tooltipStr += "<br>" + tr("IP:") + " " + DeviceIP;
-	tooltipStr += "<br>" + tr("IPv6:") + " " + DeviceIPv6;
+	tooltipStr +=  tr("IP:") + " " + DEVICE->ipAsString();
+	tooltipStr += "<br>" + tr("IPv6:") + " " + DEVICE->ipv6AsString();
       	tooltipStr += "<br>" + tr("SSID:") + " " + DeviceSSID;
       	tooltipStr += "<br>" + tr("Connection Strength:") + " " + DeviceSignalStrength + "%";
       	tooltipStr += "<br>" + tr("Connection Speed:") + " " + DeviceWirelessSpeed;
-	tooltipStr += "<br>" + tr("Mac/Ether:") + " " + DeviceMAC;
+	tooltipStr += "<br>" + tr("Mac/Ether:") + " " + DEVICE->macAsString();
 	tooltipStr += "<br>" + tr("Media:") + " " + DeviceMedia;
    	tooltipStr += "<br>" + tr("Status:") + " " + DeviceStatus;
       } else {
-	tooltipStr += "<br>" + tr("Mac/Ether:") + " " + DeviceMAC;
+	tooltipStr +=  tr("Mac/Ether:") + " " + DEVICE->macAsString();
 	tooltipStr += "<br>" + tr("Media:") + " " + DeviceMedia;
    	tooltipStr += "<br>" + tr("Status:") + " " + DeviceStatus;
 	tooltipStr += "<br>" + tr("No wireless connection detected.<br> Double-click to start the wireless configuration wizard.");
@@ -371,55 +374,44 @@ void NetworkTray::slotTriggerFileChanged() {
 
 void NetworkTray::monitorStatus(bool noloop) {
   // Start checking to see if the device has changed, and if it has inform the user
-  QString tmp;  
+  //QString tmp;  
   QIcon Icon;
   QString NotifyText = "";
 
   // Check the media status of this device
-  DeviceMedia = getMediaForIdent();
+  QString DeviceMedia = getMediaForIdent();
 
   // Check for IPv6 Changes
-  DeviceIPv6 = getIPv6ForIdent();
+  //DeviceIPv6 = getIPv6ForIdent();
 
   // Get the device up status
-  DeviceUpStatus = getUpStatusForIdent();
+  //DeviceUpStatus = getUpStatusForIdent();
 
-
-  if ( DeviceType == "Ethernet" )
-  {
-    if ( (DeviceStatus == "active" || DeviceStatus == "")  && tmp == "UP")
-      Icon = iconWiredConnect;
-    else
-      Icon = iconWiredDisconnect;
-  } else {
-    if ( DeviceStatus == "associated" && tmp == "UP" )
-      Icon = iconWifiConnect;
-    else
-      Icon = iconWifiDisconnect;
-  }
-
+  //Only get general info once for each run
+  bool iswifi = DEVICE->isWireless();
+  bool isup = DEVICE->isUp();
 
   // First check the status of the device
-  DeviceStatus = getStatusForIdent();
-  if ( DeviceType == "Ethernet" )
+  QString DeviceStatus = DEVICE->mediaStatusAsString();
+  if ( !iswifi )
   {
-    if ( (DeviceStatus == "active" || DeviceStatus == "")  && DeviceUpStatus == "UP")
+    if ( (DeviceStatus == "active" || DeviceStatus == "")  && isup)
       Icon = iconWiredConnect;
     else
       Icon = iconWiredDisconnect;
 
   } else {
-    if ( DeviceStatus == "associated" && DeviceUpStatus == "UP" )
+    if ( DeviceStatus == "associated" && isup )
       Icon = iconWifiConnect;
     else
       Icon = iconWifiDisconnect;
   }
 
   // Now check the IP Address for changes
-  DeviceIP = getIpForIdent();
-  DeviceNetmask = getNetmaskForIdent();
+  //DeviceIP = getIpForIdent();
+  //DeviceNetmask = getNetmaskForIdent();
 
-  if ( DeviceType == "Wireless" && DeviceStatus == "associated" )
+  if ( iswifi && DeviceStatus == "associated" )
   {
     // Now check the SSID Address for changes
     DeviceSSID = getSSIDForIdent();
@@ -431,7 +423,7 @@ void NetworkTray::monitorStatus(bool noloop) {
        QString FileLoad;
        bool ok;
        // Get the strength of the signal
-       tmp = getSignalStrengthForIdent( DeviceName );
+       QString tmp = getSignalStrengthForIdent( DEVICE->device() );
        DeviceSignalStrength = tmp;
        // Figure out if we need to change the strength icon
        tmp.toInt(&ok);
@@ -455,7 +447,7 @@ void NetworkTray::monitorStatus(bool noloop) {
 	  DeviceSignalStrength = tr("Unknown");
        }
        // Get the connection speed being used
-       DeviceWirelessSpeed = getWirelessSpeedForIdent( DeviceName );
+       DeviceWirelessSpeed = getWirelessSpeedForIdent( DEVICE->device() );
      }
 
   }
@@ -480,8 +472,8 @@ void NetworkTray::slotRestartNetwork() {
 }
 
 void NetworkTray::openNetManager() {
-  QString arguments;
-  arguments = "pc-netmanager";
+  QString arguments = "pc-netmanager";
+  if(getuid()!=0){ arguments.prepend("sudo "); }
   trueos::Utils::runShellCommand(arguments);
 }
 
@@ -489,25 +481,25 @@ void  NetworkTray::openDeviceInfo() {
 
   QString program = "sudo";
   QStringList arguments;
-  if ( DeviceType == "Ethernet" )
+  if ( !DEVICE->isWireless() )
   {
-    arguments << "pc-ethernetconfig" << "info" << DeviceName;
+    arguments << "pc-ethernetconfig" << "info" << DEVICE->device();
   } else {
-    arguments << "pc-wificonfig" << "info" << DeviceName;
+    arguments << "pc-wificonfig" << "info" << DEVICE->device();
   }
 
   QProcess *runCommandProc = new QProcess(this);
   runCommandProc->start(program, arguments);
 }
 
-QString NetworkTray::getTypeForIdent( QString ident )
+/*QString NetworkTray::getTypeForIdent( QString ident )
 {
    NetworkInterface ifr(ident);
    if (ifr.isWireless()) return "Wireless";
    return "Ethernet";
-}
+}*/
 
-QString NetworkTray::getStatusForIdent()
+/*QString NetworkTray::getStatusForIdent()
 {
   QString inputLine = ifconfigOutput;
   QString status = "";
@@ -521,9 +513,9 @@ QString NetworkTray::getStatusForIdent()
 	
   return status;
     
-}
+}*/
 
-QString NetworkTray::getUpStatusForIdent()
+/*QString NetworkTray::getUpStatusForIdent()
 {
   QString inputLine = ifconfigOutput;
   QString status = "";
@@ -535,7 +527,7 @@ QString NetworkTray::getUpStatusForIdent()
 	
   return status;
     
-}
+}*/
 
 QString NetworkTray::getMediaForIdent()
 {
@@ -550,7 +542,7 @@ QString NetworkTray::getMediaForIdent()
   return status;
 }
 
-QString NetworkTray::getIPv6ForIdent()
+/*QString NetworkTray::getIPv6ForIdent()
 {
   QString inputLine = ifconfigOutput;
   QString ip= "";
@@ -561,12 +553,12 @@ QString NetworkTray::getIPv6ForIdent()
   }
 	
   return ip;
-}
+}*/
 
 void NetworkTray::slotUpdateIfStatus()
 {
    QProcess *getIfProc = new QProcess();
-   getIfProc->start(IFCONFIG, QStringList() << DeviceName);
+   getIfProc->start(IFCONFIG, QStringList() << DEVICE->device());
    while(getIfProc->state() == QProcess::Starting || getIfProc->state() == QProcess::Running) {
       getIfProc->waitForFinished(50);
       //QCoreApplication::processEvents();
@@ -584,11 +576,11 @@ void NetworkTray::slotUpdateIfStatus()
 }
 
 void NetworkTray::slotCheckWifiAvailability(){
-  if(DeviceType == "Wireless"){
+  if( DEVICE->isWireless() ){
     // Get the device up status
-    DeviceStatus = getStatusForIdent();
+    //DeviceStatus = getStatusForIdent();
     //Show a message if the wifi is down
-    if(DeviceStatus == "DOWN"){
+    if( !DEVICE->isUp() ){
       trayIcon->showMessage( tr("No Wireless Network Connection"),tr("Click here to configure wireless connections"),QSystemTrayIcon::NoIcon,15000);
     }
   }
@@ -598,7 +590,7 @@ void NetworkTray::updateWifiNetworks(){
   // Change the right-click of the tray icon to show all available wireless networks
   
   //update the list of wifi networks available
-  QString cmd = "ifconfig "+DeviceName+" list scan";
+  QString cmd = "ifconfig "+DEVICE->device()+" list scan";
   QStringList wifinet = trueos::Utils::runShellCommand(cmd);
  
  //Redo the tray menu
@@ -663,7 +655,7 @@ void NetworkTray::updateWifiNetworks(){
   QObject::connect(trayActionGroup, SIGNAL(triggered(QAction*)),this,SLOT(slotGetNetKey(QAction*)));
   //Add the configuration options to the bottom
   trayIconMenu->addSeparator();
-  trayIconMenu->addAction( tr("Configure ") + DeviceName, this, SLOT(openConfigDlg()));
+  trayIconMenu->addAction( tr("Configure ") + DEVICE->device(), this, SLOT(openConfigDlg()));
   trayIconMenu->addAction( tr("Start the Network Manager"), this, SLOT(openNetManager()));
   trayIconMenu->addAction( tr("Restart the Network"), this, SLOT(slotRestartNetwork()));
   trayIconMenu->addAction( tr("Close the Network Monitor"), this, SLOT(slotQuit()));
@@ -680,7 +672,7 @@ void NetworkTray::slotGetNetKey(QAction* act){
   smSSID = smSSID.section(".",0,0,QString::SectionSkipEmpty);
   
   //get the full SSID string
-  QString dat = trueos::Utils::runShellCommandSearch("ifconfig -v "+DeviceName+" list scan",smSSID);
+  QString dat = trueos::Utils::runShellCommandSearch("ifconfig -v "+DEVICE->device()+" list scan",smSSID);
   QStringList wdat = NetworkInterface::parseWifiScanLine(dat,true);
   QString SSID = wdat[0];
   
@@ -707,7 +699,7 @@ void NetworkTray::slotGetNetKey(QAction* act){
 void NetworkTray::slotQuickConnect(QString key,QString SSID, bool hexkey){
   
   //Run the wifiQuickConnect function
-  NetworkInterface::wifiQuickConnect(SSID,key,DeviceName, hexkey);
+  NetworkInterface::wifiQuickConnect(SSID,key,DEVICE->device(), hexkey);
   
   //Inform the user that it is connecting (this is done by libtrueos now)
   //QString msg = tr("Connecting to ") + SSID;

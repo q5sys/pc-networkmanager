@@ -7,6 +7,7 @@
 #include <QMenu>
 
 #include "netKey.h"
+#include "../backend/backend-network.h"
 
 #define PROGPATH QString("/usr/local/share/trueos/pc-netmanager")
 #define IFCONFIG QString("/sbin/ifconfig")
@@ -41,25 +42,26 @@ private slots:
    void slotUpdateIfStatus();
    
 private:
+   backend::NetDevice *DEVICE;
    void displayTooltip();
    void confirmDevice( QString device );
    void loadIcons();
    void updateWifiNetworks();   
    QFileSystemWatcher *fileWatcherClosed;
    QString getLineFromCommandOutput( QString command );
-   QString getNameForIdent( QString ident );
-   QString getIpForIdent();
-   QString getMacForIdent( QString ident );
+   //QString getNameForIdent( QString ident );
+   //QString getIpForIdent();
+   //QString getMacForIdent( QString ident );
    QString getSSIDForIdent();
-   QString getNetmaskForIdent();
+   //QString getNetmaskForIdent();
    QString getSignalStrengthForIdent( QString ident );
    QString getWirelessSpeedForIdent( QString ident );
-   QString getUpStatusForIdent();
-   QString getStatusForIdent();
+   //QString getUpStatusForIdent();
+   //QString getStatusForIdent();
    QString getMediaForIdent();
-   QString getIPv6ForIdent();
-   QString getWifiParent( QString dev );
-   QString getTypeForIdent( QString ident );
+   //QString getIPv6ForIdent();
+   //QString getWifiParent( QString dev );
+   //QString getTypeForIdent( QString ident );
    QString ifconfigOutput;
    QProcess *runCommandProc;
    QProcess *getIfProc;
