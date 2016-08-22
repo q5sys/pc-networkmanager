@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Name=Network Manager
+Exec=pc-netmanager
+TryExec=pc-netmanager
+Terminal=false
+Type=Application
+Icon=network-wired
+Categories=Utility;
+GenericName=Manage Network Devices

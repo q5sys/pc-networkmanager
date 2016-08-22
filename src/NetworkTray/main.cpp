@@ -12,11 +12,38 @@
 
 #include <NetworkTray.h>
 #include <unistd.h>
+
+#include "../backend/backend-network.h"
+
 #define PREFIX QString("/usr/local")
 
 
 int  main(int argc, char *argv[]) {
 
+  QString dev;
+  if(argc==1){
+    //no device specified - automatically figure out which one(s) to use
+   QStringList devs = backend::NetDevice::listNetDevices();
+   QStringList wifi = devs.filter("wlan");
+    wifi.sort();
+    //Look for wifi devices first
+    for(int i=0; i<wifi.length(); i++){
+      devs.removeAll(wifi[i]); //already handled
+      if(i==0){ dev = devs[i]; } //use the first wifi device
+      else{
+        //multiple wifi devices - open more tray devices
+        QProcess::startDetached("pc-nettray "+devs[i]);
+      }
+    }
+    //Now look for wired devices
+    for(int i=0; i<devs.length() && dev.isEmpty(); i++){
+      if(devs[i].startsWith("lo")){ continue; } //don't use loopback devices
+      dev = devs[i];
+    }
+    
+  }else{
+    dev = argv[1];
+  }
    QApplication a(argc, argv);
 
    bool ready = false;
@@ -44,14 +71,8 @@ int  main(int argc, char *argv[]) {
    
    NetworkTray tray;
    QApplication::setQuitOnLastWindowClosed(false);
+   tray.programInit(dev);
 
-   if ( argc == 2)
-   {
-       QString Device = argv[1];
-       tray.programInit(Device);
-   } else {
-      exit(1);
-   }
  
 
    return  a.exec();
