@@ -4,9 +4,9 @@ SUBDIRS+= NetworkManager wificonfig ethernetconfig NetworkTray
 
 #Rules for installing the .desktop registrations
 desktop.files=desktop/*.desktop
-desktop.path=/usr/local/share/applications
+desktop.path=$(INSTALL_ROOT)/usr/local/share/applications
 
 deskauto.files=desktop-autostart/*.desktop
-deskauto.path=/usr/local/etc/xdg/autostart
+deskauto.path=$(INSTALL_ROOT)/usr/local/etc/xdg/autostart
 
 INSTALLS += desktop deskauto
