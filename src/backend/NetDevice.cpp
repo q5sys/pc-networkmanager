@@ -60,7 +60,7 @@ QString NetDevice::ipAsString(){
    
    ioctl(s, SIOCGIFADDR, &ifr);
    struct in_addr in = ((sockaddr_in *) &ifr.ifr_addr)->sin_addr;
-
+   close(s); //close the file descriptor
    return QString(inet_ntoa(in));
 }
 
@@ -105,7 +105,7 @@ QString NetDevice::netmaskAsString(){
    
    ioctl(s, SIOCGIFNETMASK, &ifr);
    struct in_addr in = ((sockaddr_in *) &ifr.ifr_addr)->sin_addr;
-
+  close(s); //close the file descriptor
    return QString(inet_ntoa(in));
 }
 
@@ -182,7 +182,8 @@ QString NetDevice::mediaStatusAsString(){
          if (ifm.ifm_status & IFM_ACTIVE) status = "active";
          else status = "no carrier";
    }
-   return status;
+  close(s); //close the file descriptor
+  return status;
 }
 
 QString NetDevice::gatewayAsString(){
@@ -202,8 +203,9 @@ bool NetDevice::isWireless(){
    int s = socket(AF_INET, SOCK_DGRAM, 0);
 
    ioctl(s, SIOCGIFMEDIA, &ifm);
-
-   return IFM_TYPE(ifm.ifm_active) == IFM_IEEE80211;
+  bool iswifi = (IFM_TYPE(ifm.ifm_active) == IFM_IEEE80211);
+  close(s); //close the file descriptor
+   return iswifi;
 }
 
 //Get the parent device (if this is a wireless wlan)
@@ -229,8 +231,9 @@ bool NetDevice::isUp(){
    int s = socket(AF_INET, SOCK_DGRAM, 0);
 
    ioctl(s, SIOCGIFFLAGS, &ifr);
-
-   return (ifr.ifr_flags & IFF_UP) ? 1 : 0;
+   bool isup = (ifr.ifr_flags & IFF_UP);
+   close(s); //close the file descriptor
+   return  isup;
 }
 
 //Determine the number of packets received by the device
