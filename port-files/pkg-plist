@@ -2,45 +2,8 @@ bin/pc-ethernetconfig
 bin/pc-netmanager
 bin/pc-nettray
 bin/pc-wificonfig
-etc/xdg/autostart/pc-nettray.desktop
+%%QT_ETCDIR%%/autostart/pc-nettray.desktop
 share/applications/pc-netmanager.desktop
 share/applications/pc-nettray.desktop
 share/trueos/conf/pubdns.conf
-share/trueos/pc-netmanager/pics/defaulticon.png
-share/trueos/pc-netmanager/pics/info.png
-share/trueos/pc-netmanager/pics/network_local.png
-share/trueos/pc-netmanager/pics/network_local_dis.png
-share/trueos/pc-netmanager/pics/network_wifi.png
-share/trueos/pc-netmanager/pics/network_wifi_dis.png
-share/trueos/pc-netmanager/pics/object-locked.png
-share/trueos/pc-netmanager/pics/object-unlocked.png
-share/trueos/pc-netmanager/pics/tray_local.png
-share/trueos/pc-netmanager/pics/tray_local_dis.png
-share/trueos/pc-netmanager/pics/tray_wifi.png
-share/trueos/pc-netmanager/pics/tray_wifi30.png
-share/trueos/pc-netmanager/pics/tray_wifi60.png
-share/trueos/pc-netmanager/pics/tray_wifi85.png
-share/trueos/pc-netmanager/pics/tray_wifi_dis.png
 share/trueos/pc-netmanager/umts_stick
-/usr/ports/sysutils/pc-networkmanager/work/pc-networkmanager-58041f153b9b711e0907711b6bd60579ce7a70bb/src/usr/ports/sysutils/pc-networkmanager/work/stage%%QT_PREFIX%%/%%QT_ETCDIR%%/autostart/pc-nettray.desktop
-/usr/ports/sysutils/pc-networkmanager/work/pc-networkmanager-58041f153b9b711e0907711b6bd60579ce7a70bb/src/usr/ports/sysutils/pc-networkmanager/work/stage%%QT_PREFIX%%/share/applications/pc-netmanager.desktop
-/usr/ports/sysutils/pc-networkmanager/work/pc-networkmanager-58041f153b9b711e0907711b6bd60579ce7a70bb/src/usr/ports/sysutils/pc-networkmanager/work/stage%%QT_PREFIX%%/share/applications/pc-nettray.desktop
-@dir /usr/ports/sysutils/pc-networkmanager/work/pc-networkmanager-58041f153b9b711e0907711b6bd60579ce7a70bb/src/usr/ports/sysutils/pc-networkmanager/work/stage%%QT_PREFIX%%/%%QT_ETCDIR%%/autostart
-@dir /usr/ports/sysutils/pc-networkmanager/work/pc-networkmanager-58041f153b9b711e0907711b6bd60579ce7a70bb/src/usr/ports/sysutils/pc-networkmanager/work/stage%%QT_PREFIX%%/%%QT_ETCDIR%%
-@dir /usr/ports/sysutils/pc-networkmanager/work/pc-networkmanager-58041f153b9b711e0907711b6bd60579ce7a70bb/src/usr/ports/sysutils/pc-networkmanager/work/stage%%QT_PREFIX%%/etc
-@dir /usr/ports/sysutils/pc-networkmanager/work/pc-networkmanager-58041f153b9b711e0907711b6bd60579ce7a70bb/src/usr/ports/sysutils/pc-networkmanager/work/stage%%QT_PREFIX%%/share/applications
-@dir /usr/ports/sysutils/pc-networkmanager/work/pc-networkmanager-58041f153b9b711e0907711b6bd60579ce7a70bb/src/usr/ports/sysutils/pc-networkmanager/work/stage%%QT_PREFIX%%/share
-@dir /usr/ports/sysutils/pc-networkmanager/work/pc-networkmanager-58041f153b9b711e0907711b6bd60579ce7a70bb/src/usr/ports/sysutils/pc-networkmanager/work/stage%%QT_PREFIX%%
-@dir /usr/ports/sysutils/pc-networkmanager/work/pc-networkmanager-58041f153b9b711e0907711b6bd60579ce7a70bb/src/usr/ports/sysutils/pc-networkmanager/work/stage/usr
-@dir /usr/ports/sysutils/pc-networkmanager/work/pc-networkmanager-58041f153b9b711e0907711b6bd60579ce7a70bb/src/usr/ports/sysutils/pc-networkmanager/work/stage
-@dir /usr/ports/sysutils/pc-networkmanager/work/pc-networkmanager-58041f153b9b711e0907711b6bd60579ce7a70bb/src/usr/ports/sysutils/pc-networkmanager/work
-@dir /usr/ports/sysutils/pc-networkmanager/work/pc-networkmanager-58041f153b9b711e0907711b6bd60579ce7a70bb/src/usr/ports/sysutils/pc-networkmanager
-@dir /usr/ports/sysutils/pc-networkmanager/work/pc-networkmanager-58041f153b9b711e0907711b6bd60579ce7a70bb/src/usr/ports/sysutils
-@dir /usr/ports/sysutils/pc-networkmanager/work/pc-networkmanager-58041f153b9b711e0907711b6bd60579ce7a70bb/src/usr/ports
-@dir /usr/ports/sysutils/pc-networkmanager/work/pc-networkmanager-58041f153b9b711e0907711b6bd60579ce7a70bb/src/usr
-@dir /usr/ports/sysutils/pc-networkmanager/work/pc-networkmanager-58041f153b9b711e0907711b6bd60579ce7a70bb/src
-@dir /usr/ports/sysutils/pc-networkmanager/work/pc-networkmanager-58041f153b9b711e0907711b6bd60579ce7a70bb
-@dir /usr/ports/sysutils/pc-networkmanager/work
-@dir /usr/ports/sysutils/pc-networkmanager
-@dir /usr/ports/sysutils
-@dir /usr/ports
