@@ -490,7 +490,14 @@ void NetworkTray::updateWifiNetworks(){
   trayIconMenu->addSeparator();
   trayIconMenu->addAction( tr("Configure ") + DEVICE->device(), this, SLOT(openConfigDlg()));
   trayIconMenu->addAction( tr("Start the Network Manager"), this, SLOT(openNetManager()));
+  trayIconMenu->addSeparator();
   trayIconMenu->addAction( tr("Restart the Network"), this, SLOT(slotRestartNetwork()));
+  if(QFile::exists("/usr/local/bin/enable-tor-mode")){
+    QAction *tmp =  trayIconMenu->addAction(tr("Route through TOR") );
+    tmp->setCheckable(true);
+    tmp->setChecked(checkTorMode());
+    connect(tmp, SIGNAL(toggled(bool)), this, SLOT(slotToggleTorMode(bool)) );
+  }
   trayIconMenu->addAction( tr("Close the Network Monitor"), this, SLOT(slotQuit()));
   
   //attach the new menu to the tray
@@ -537,4 +544,14 @@ void NetworkTray::slotQuickConnect(QString key,QString SSID, bool hexkey){
   //Inform the user that it is connecting (this is done by libtrueos now)
   //QString msg = tr("Connecting to ") + SSID;
   //trayIcon->showMessage( tr("Please Wait"),msg,QSystemTrayIcon::NoIcon,10000);
+}
+
+void NetworkTray::slotToggleTorMode(bool enable){
+  if(enable){ QProcess::startDetached("qsudo enable-tor-mode && xdg-open https://check.torproject.org"); }
+  else{ QProcess::startDetached("qsudo disable-tor-mode"); }
+}
+
+bool NetworkTray::checkTorMode(){
+  bool running = (0 == QProcess::execute("enable-tor-mode -c") );// 0 if *in* TOR mode, 1 if not
+  return running;
 }

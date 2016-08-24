@@ -40,7 +40,8 @@ private slots:
    void slotQuickConnect(QString key, QString SSID, bool hexkey);
    void slotCheckWifiAvailability();
    void slotUpdateIfStatus();
-   
+   void slotToggleTorMode(bool enable);
+
 private:
    backend::NetDevice *DEVICE;
    void displayTooltip();
@@ -53,6 +54,8 @@ private:
    QString getSignalStrengthForIdent( QString ident );
    QString getWirelessSpeedForIdent( QString ident );
    QString getMediaForIdent();
+
+    bool checkTorMode();
 
    QString ifconfigOutput;
    QProcess *runCommandProc;
