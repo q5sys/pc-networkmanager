@@ -25,11 +25,12 @@ int  main(int argc, char *argv[]) {
     //no device specified - automatically figure out which one(s) to use
    QStringList devs = backend::NetDevice::listNetDevices();
    QStringList wifi = devs.filter("wlan");
+    qDebug() << "Found Devices:" << devs << wifi;
     wifi.sort();
     //Look for wifi devices first
     for(int i=0; i<wifi.length(); i++){
       devs.removeAll(wifi[i]); //already handled
-      if(i==0){ dev = devs[i]; } //use the first wifi device
+      if(i==0){ dev = wifi[i]; } //use the first wifi device
       else{
         //multiple wifi devices - open more tray devices
         QProcess::startDetached("pc-nettray "+devs[i]);
@@ -44,6 +45,7 @@ int  main(int argc, char *argv[]) {
   }else{
     dev = argv[1];
   }
+  qDebug() << "Using device:" << dev;
    QApplication a(argc, argv);
 
    bool ready = false;
