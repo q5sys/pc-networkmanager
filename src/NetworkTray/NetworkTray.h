@@ -49,19 +49,11 @@ private:
    void updateWifiNetworks();   
    QFileSystemWatcher *fileWatcherClosed;
    QString getLineFromCommandOutput( QString command );
-   //QString getNameForIdent( QString ident );
-   //QString getIpForIdent();
-   //QString getMacForIdent( QString ident );
    QString getSSIDForIdent();
-   //QString getNetmaskForIdent();
    QString getSignalStrengthForIdent( QString ident );
    QString getWirelessSpeedForIdent( QString ident );
-   //QString getUpStatusForIdent();
-   //QString getStatusForIdent();
    QString getMediaForIdent();
-   //QString getIPv6ForIdent();
-   //QString getWifiParent( QString dev );
-   //QString getTypeForIdent( QString ident );
+
    QString ifconfigOutput;
    QProcess *runCommandProc;
    QProcess *getIfProc;

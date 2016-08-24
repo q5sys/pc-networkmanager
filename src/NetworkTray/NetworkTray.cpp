@@ -21,21 +21,11 @@
 #define PREFIX QString("/usr/local")
 
 // Public Variables
-//QString DeviceName;
-//QString DeviceType;
-//QString DeviceParent;
-//QString DeviceIP;
-//QString DeviceIPv6;
-//QString DeviceMAC;
 QString DeviceSSID;
 QString DeviceSignalStrength = "";
 int 	DeviceSavedStrength = 0;
 QString DeviceWirelessSpeed = "";
-//QString DeviceStatus;
-//QString DeviceUpStatus;
-//QString DeviceIdent;
-//QString DeviceNetmask;
-//QString DeviceMedia;
+
 QString username;
 
 void NetworkTray::programInit(QString Device)
@@ -46,8 +36,6 @@ void NetworkTray::programInit(QString Device)
   QString tmp;
   QIcon Icon;
   DEVICE = new backend::NetDevice(Device);
- // DeviceName = Device;
-  //DeviceType = getTypeForIdent(DeviceName);
 
   QString cmd = IFCONFIG + " lagg0 2>/dev/null | grep " + Device;
   QString checkLagg = getLineFromCommandOutput(cmd.toLatin1());
@@ -65,23 +53,6 @@ void NetworkTray::programInit(QString Device)
 
   // Update the ifconfig line we will be parsing
   slotUpdateIfStatus();
-
-  // Get the MAC for this device
-  //DeviceMAC=getMacForIdent(DeviceName);
-
-  /*if ( DeviceName.indexOf("wlan") != -1 )
-  {
-     DeviceParent = getWifiParent(DeviceName);
-
-     // Get HW Identify line
-     DeviceIdent = getNameForIdent(DeviceParent);
-
-     // If the name comes up bogus for some reason
-     if ( DeviceIdent.isEmpty() ) 
-       DeviceIdent = tr("Unknown Wireless Device");
-  } else {
-      DeviceIdent = getNameForIdent( DeviceName );
-  }*/
 
   trayIcon = new QSystemTrayIcon(this);
   
@@ -102,14 +73,6 @@ void NetworkTray::programInit(QString Device)
 
 }
 
-
-// Function which locates the parent device of a wlan child device
-/*QString NetworkTray::getWifiParent(QString dev)
-{
-   dev.remove(0, dev.size() -1 );
-   QString DevNum = dev;
-   return trueos::Utils::sysctl("net.wlan." + DevNum + ".%parent");
-}*/
 
 void NetworkTray::confirmDevice( QString device )
 {
@@ -139,50 +102,6 @@ QString NetworkTray::getLineFromCommandOutput( QString command )
   return line;
 }
 
-
-/*QString NetworkTray::getNameForIdent( QString ident )
-{
-  NetworkInterface ifr(ident);
-  return ifr.desc();
-}*/
-
-
-/*QString NetworkTray::getIpForIdent()
-{
-  QString inputLine = ifconfigOutput;
-  QString ip= "";
-  QString tDev;
-  if ( usingLagg ) {
-    tDev = "lagg0";
-    QString cmd = IFCONFIG + " " + tDev + " | grep " + DeviceName;
-    QString checkLagg = getLineFromCommandOutput(cmd.toLatin1());
-    if ( ! checkLagg.isEmpty() ) {
-      cmd = IFCONFIG + " " + tDev + " | grep 'inet ' ";
-      inputLine = getLineFromCommandOutput(cmd.toLatin1());
-    }
-
-    if (inputLine != "" && inputLine.indexOf("inet ") != -1){
-      ip = inputLine.remove(0, inputLine.indexOf("inet ") + 5);
-      ip.truncate(inputLine.indexOf(" "));
-    }
-    return ip;
-  }
-
-  if (inputLine != "" && inputLine.indexOf("inet ") != -1){
-    ip = inputLine.remove(0, inputLine.indexOf("inet ") + 5);
-    ip.truncate(inputLine.indexOf(" "));
-  }
-	
-  return ip;
-}*/
-
-
-/*QString NetworkTray::getMacForIdent( QString ident )
-{
-  NetworkInterface ifr(ident);
-  return ifr.macAsString();
-}*/
-
 QString NetworkTray::getSSIDForIdent()
 {
   QString inputLine = ifconfigOutput;
@@ -195,19 +114,6 @@ QString NetworkTray::getSSIDForIdent()
 	
   return SSID;
 }
-
-/*QString NetworkTray::getNetmaskForIdent()
-{
-  QString inputLine = ifconfigOutput;
-  QString netmask= "";
-	
-  if (inputLine != "" && inputLine.indexOf("netmask ") != -1){
-    netmask = inputLine.remove(0, inputLine.indexOf("netmask ") + 8);
-    netmask.truncate(netmask.indexOf(" "));
-  }
-	
-  return netmask;
-}*/
 
 QString NetworkTray::getSignalStrengthForIdent( QString ident )
 {
@@ -222,24 +128,12 @@ QString NetworkTray::getSignalStrengthForIdent( QString ident )
 
   // Lets find the signal strength / noise variables now
   tmp = tmp.section(" ",4,4);
- // tmp.remove(0, tmp.indexOf(":"));
-  //tmp.remove(0, tmp.indexOf(" "));
 
   // Get the noise
   noise = tmp.section(":",1,-1).simplified();
-  //noise.remove(0, noise.lastIndexOf(":") + 1);
-  //noise.remove(noise.indexOf(" "), noise.size());
-  //noise = noise.simplified();
-  //if ( noise.indexOf("-") == 0)
-	//noise.remove(0, 1);
-
   // Get the signal
   sig = tmp.section(":",0,0).simplified();
-  //sig.remove(sig.indexOf(":"), sig.size());
-  //sig.remove(0, sig.lastIndexOf(" "));
-  //sig = sig.simplified();
-  //if ( sig.indexOf("-") == 0)
-	//sig.remove(0, 1);
+
 
   //qDebug() << "Signal:" << sig << " Noise:" << noise;
 
@@ -381,12 +275,6 @@ void NetworkTray::monitorStatus(bool noloop) {
   // Check the media status of this device
   QString DeviceMedia = getMediaForIdent();
 
-  // Check for IPv6 Changes
-  //DeviceIPv6 = getIPv6ForIdent();
-
-  // Get the device up status
-  //DeviceUpStatus = getUpStatusForIdent();
-
   //Only get general info once for each run
   bool iswifi = DEVICE->isWireless();
   bool isup = DEVICE->isUp();
@@ -406,10 +294,6 @@ void NetworkTray::monitorStatus(bool noloop) {
     else
       Icon = iconWifiDisconnect;
   }
-
-  // Now check the IP Address for changes
-  //DeviceIP = getIpForIdent();
-  //DeviceNetmask = getNetmaskForIdent();
 
   if ( iswifi && DeviceStatus == "associated" )
   {
@@ -492,42 +376,6 @@ void  NetworkTray::openDeviceInfo() {
   runCommandProc->start(program, arguments);
 }
 
-/*QString NetworkTray::getTypeForIdent( QString ident )
-{
-   NetworkInterface ifr(ident);
-   if (ifr.isWireless()) return "Wireless";
-   return "Ethernet";
-}*/
-
-/*QString NetworkTray::getStatusForIdent()
-{
-  QString inputLine = ifconfigOutput;
-  QString status = "";
-	
-  if (inputLine != "" && inputLine.indexOf("associated") != -1)
-    status = "associated";
-  else if (inputLine != "" && inputLine.indexOf("active") != -1)
-    status = "active";
-  else
-    status = "DOWN";  
-	
-  return status;
-    
-}*/
-
-/*QString NetworkTray::getUpStatusForIdent()
-{
-  QString inputLine = ifconfigOutput;
-  QString status = "";
-	
-  if (inputLine != "" && inputLine.indexOf("<UP") != -1)
-    status = "UP";
-  else
-    status = "DOWN";  
-	
-  return status;
-    
-}*/
 
 QString NetworkTray::getMediaForIdent()
 {
@@ -541,19 +389,6 @@ QString NetworkTray::getMediaForIdent()
 	
   return status;
 }
-
-/*QString NetworkTray::getIPv6ForIdent()
-{
-  QString inputLine = ifconfigOutput;
-  QString ip= "";
-	
-  if (inputLine != "" && inputLine.indexOf("inet6 ") != -1){
-    ip = inputLine.remove(0, inputLine.indexOf("inet6 ") + 5);
-    ip.truncate(ip.indexOf("%"));
-  }
-	
-  return ip;
-}*/
 
 void NetworkTray::slotUpdateIfStatus()
 {
@@ -577,8 +412,6 @@ void NetworkTray::slotUpdateIfStatus()
 
 void NetworkTray::slotCheckWifiAvailability(){
   if( DEVICE->isWireless() ){
-    // Get the device up status
-    //DeviceStatus = getStatusForIdent();
     //Show a message if the wifi is down
     if( !DEVICE->isUp() ){
       trayIcon->showMessage( tr("No Wireless Network Connection"),tr("Click here to configure wireless connections"),QSystemTrayIcon::NoIcon,15000);
