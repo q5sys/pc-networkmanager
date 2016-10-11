@@ -547,11 +547,16 @@ void NetworkTray::slotQuickConnect(QString key,QString SSID, bool hexkey){
 }
 
 void NetworkTray::slotToggleTorMode(bool enable){
-  if(enable){ QProcess::startDetached("qsudo enable-tor-mode && xdg-open https://check.torproject.org"); }
+  if(enable){ QProcess::startDetached("qsudo enable-tor-mode"); }
   else{ QProcess::startDetached("qsudo disable-tor-mode"); }
 }
 
 bool NetworkTray::checkTorMode(){
+  static bool lastcheck = false;
   bool running = (0 == QProcess::execute("enable-tor-mode -c") );// 0 if *in* TOR mode, 1 if not
+  if(lastcheck != running && running){
+    QProcess::startDetached("xdg-open https://check.torproject.org");
+  }
+  lastcheck = running;
   return running;
 }
