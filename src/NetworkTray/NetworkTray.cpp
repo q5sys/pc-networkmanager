@@ -32,6 +32,13 @@ extern bool PICOSESSION;
 
 void NetworkTray::programInit(QString Device)
 {
+  //Setup all the null pointers to start with
+  runCommandProc = 0;
+  getIfProc = 0;
+  trayIconMenu = 0;
+  trayActionGroup = 0;
+  fileWatcherClosed = 0;
+  DEVICE = 0;
   // Load the icons we'll be using into memory
   loadIcons();
   trayIcon = new QSystemTrayIcon(this);
