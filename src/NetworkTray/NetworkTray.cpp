@@ -28,43 +28,46 @@ QString DeviceWirelessSpeed = "";
 
 QString username;
 
+extern bool PICOSESSION;
+
 void NetworkTray::programInit(QString Device)
 {
   // Load the icons we'll be using into memory
   loadIcons();
-
-  QString tmp;
-  QIcon Icon;
-  DEVICE = new backend::NetDevice(Device);
-
-  QString cmd = IFCONFIG + " lagg0 2>/dev/null | grep " + Device;
-  QString checkLagg = getLineFromCommandOutput(cmd.toLatin1());
-  if ( ! checkLagg.isEmpty() )
-    usingLagg = true;
-  else
-    usingLagg = false;
-  
-
-  // Get the username of the person we are running as
-  username = QString::fromLocal8Bit(getenv("LOGNAME"));
-  
-  // Confirm this is a legit device
-  confirmDevice(Device); 
-
-  // Update the ifconfig line we will be parsing
-  slotUpdateIfStatus();
-
   trayIcon = new QSystemTrayIcon(this);
+
+  if(!PICOSESSION){
+    QString tmp;
+    QIcon Icon;
+    DEVICE = new backend::NetDevice(Device);
+
+    QString cmd = IFCONFIG + " lagg0 2>/dev/null | grep " + Device;
+    QString checkLagg = getLineFromCommandOutput(cmd.toLatin1());
+    if ( ! checkLagg.isEmpty() )
+      usingLagg = true;
+    else
+      usingLagg = false;
+    // Get the username of the person we are running as
+    username = QString::fromLocal8Bit(getenv("LOGNAME"));
   
-  // Connect our double-click slot and message clicked slot
-  connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(slotTrayActivated(QSystemTrayIcon::ActivationReason)));
-  connect(trayIcon, SIGNAL( messageClicked() ), this,SLOT( openConfigDlg() ));  
-  trayIcon->setIcon(iconWifiDisconnect);
+    // Confirm this is a legit device
+    confirmDevice(Device); 
+
+    // Update the ifconfig line we will be parsing
+    slotUpdateIfStatus();
+  
+    // Connect our double-click slot and message clicked slot
+    connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(slotTrayActivated(QSystemTrayIcon::ActivationReason)));
+    connect(trayIcon, SIGNAL( messageClicked() ), this,SLOT( openConfigDlg() ));
+  }
+
+  trayIcon->setIcon(PICOSESSION ? iconWiredConnect : iconWifiDisconnect);
   trayIcon->show();
   
   //Display a message about the wireless status
-  QTimer::singleShot(5000,this,SLOT(slotCheckWifiAvailability() ));
-
+  if(!PICOSESSION){
+    QTimer::singleShot(5000,this,SLOT(slotCheckWifiAvailability() ));
+  }
   // Create the tooltip popup now
   displayTooltip();
 
@@ -76,6 +79,7 @@ void NetworkTray::programInit(QString Device)
 
 void NetworkTray::confirmDevice( QString device )
 {
+  if(PICOSESSION){ return; }
    QString command = IFCONFIG + " -l | grep " + device;
    QString line = getLineFromCommandOutput(command);
    if ( line.isEmpty() )
@@ -104,6 +108,7 @@ QString NetworkTray::getLineFromCommandOutput( QString command )
 
 QString NetworkTray::getSSIDForIdent()
 {
+  if(PICOSESSION){ return ""; }
   QString inputLine = ifconfigOutput;
   QString SSID = "";
 	
@@ -117,6 +122,7 @@ QString NetworkTray::getSSIDForIdent()
 
 QString NetworkTray::getSignalStrengthForIdent( QString ident )
 {
+  if(PICOSESSION){ return ""; }
   // Get the signal strength of this device
   QString command = IFCONFIG + " " + ident + " list scan | grep " + DeviceSSID;
   QString line = getLineFromCommandOutput(command);
@@ -157,6 +163,7 @@ QString NetworkTray::getSignalStrengthForIdent( QString ident )
 
 QString NetworkTray::getWirelessSpeedForIdent( QString ident )
 {
+  if(PICOSESSION){ return ""; }
   QString command = IFCONFIG + " " + ident + " list scan | grep " + DeviceSSID;
   QString line = getLineFromCommandOutput(command);
   QString tmp;
@@ -182,7 +189,7 @@ void NetworkTray::slotTrayActivated(QSystemTrayIcon::ActivationReason reason) {
 
 
 void  NetworkTray::openConfigDlg() {
-
+  if(PICOSESSION){ return; }
   if ( !DEVICE->isWireless() )
   {
     QString program = "sudo";
@@ -203,29 +210,36 @@ void  NetworkTray::openConfigDlg() {
 void  NetworkTray::displayTooltip() {
 
   QString  tooltipStr;
-  tooltipStr = QString(tr("Device Name:") + " /dev/" + DEVICE->device());
-  tooltipStr += "<br>" + DEVICE->desc() +"<hr>";
-  QString DeviceStatus = DEVICE->mediaStatusAsString();
-  QString DeviceMedia = getMediaForIdent();
-  if ( !DEVICE->isWireless() )  {
-    //WIRED DEVICE
-     if ( DeviceStatus == "active" || DeviceStatus == "" ) {
-       tooltipStr +=  tr("IP:") + " " + DEVICE->ipAsString();
-       tooltipStr += "<br>" + tr("IPv6:") + " " + DEVICE->ipv6AsString();
-       tooltipStr += "<br>" + tr("Mac/Ether:") + " " + DEVICE->macAsString();
-       tooltipStr += "<br>" + tr("Media:") + " " + DeviceMedia;
-       tooltipStr += "<br>" + tr("Status:") + " " + (DEVICE->isUp() ? "UP" : "DOWN");
-     } else {
-       tooltipStr +=  tr("Mac/Ether:") + " " + DEVICE->macAsString();
-       tooltipStr += "<br>" + tr("Media:") + " " + DeviceMedia;
-       tooltipStr += "<br>" + tr("Status:") + " " + DeviceStatus;
-       tooltipStr += "<br>" + tr("No connection detected.<br> Check your cable connection and try again!");
-     }
-
+  if(PICOSESSION){
+    QString sshinfo = getenv("SSH_CONNECTION");
+    QString auth = getenv("PICO_CLIENT_AUTH");
+    tooltipStr = QString( tr("PICO Connection: %1") ).arg(auth);
+    tooltipStr += "<br>"+ QString(tr("Client IP: %1")).arg(sshinfo.section(" ",0,0));
+    tooltipStr += "<br>"+ QString(tr("Host IP: %1")).arg(sshinfo.section(" ",2,2));
+  }else{
+    //Real device
+    tooltipStr = QString(tr("Device Name:") + " /dev/" + DEVICE->device());
+    tooltipStr += "<br>" + DEVICE->desc() +"<hr>";
+    QString DeviceStatus = DEVICE->mediaStatusAsString();
+    QString DeviceMedia = getMediaForIdent();
+    if ( !DEVICE->isWireless() )  {
+      //WIRED DEVICE
+       if ( DeviceStatus == "active" || DeviceStatus == "" ) {
+         tooltipStr +=  tr("IP:") + " " + DEVICE->ipAsString();
+         tooltipStr += "<br>" + tr("IPv6:") + " " + DEVICE->ipv6AsString();
+         tooltipStr += "<br>" + tr("Mac/Ether:") + " " + DEVICE->macAsString();
+         tooltipStr += "<br>" + tr("Media:") + " " + DeviceMedia;
+         tooltipStr += "<br>" + tr("Status:") + " " + (DEVICE->isUp() ? "UP" : "DOWN");
+       } else {
+         tooltipStr +=  tr("Mac/Ether:") + " " + DEVICE->macAsString();
+         tooltipStr += "<br>" + tr("Media:") + " " + DeviceMedia;
+         tooltipStr += "<br>" + tr("Status:") + " " + DeviceStatus;
+         tooltipStr += "<br>" + tr("No connection detected.<br> Check your cable connection and try again!");
+       }
    } else {
      // If this is a wireless device, give different output
      if ( DeviceStatus == "associated" ) {
-	tooltipStr +=  tr("IP:") + " " + DEVICE->ipAsString();
+	  tooltipStr +=  tr("IP:") + " " + DEVICE->ipAsString();
 	tooltipStr += "<br>" + tr("IPv6:") + " " + DEVICE->ipv6AsString();
       	tooltipStr += "<br>" + tr("SSID:") + " " + DeviceSSID;
       	tooltipStr += "<br>" + tr("Connection Strength:") + " " + DeviceSignalStrength + "%";
@@ -233,13 +247,14 @@ void  NetworkTray::displayTooltip() {
 	tooltipStr += "<br>" + tr("Mac/Ether:") + " " + DEVICE->macAsString();
 	tooltipStr += "<br>" + tr("Media:") + " " + DeviceMedia;
    	tooltipStr += "<br>" + tr("Status:") + " " + DeviceStatus;
-      } else {
+       } else {
 	tooltipStr +=  tr("Mac/Ether:") + " " + DEVICE->macAsString();
 	tooltipStr += "<br>" + tr("Media:") + " " + DeviceMedia;
    	tooltipStr += "<br>" + tr("Status:") + " " + DeviceStatus;
 	tooltipStr += "<br>" + tr("No wireless connection detected.<br> Double-click to start the wireless configuration wizard.");
       }
-   }
+    }
+  } //end check for PICOSESSION
 
   // Update the tooltop
   trayIcon->setToolTip(tooltipStr);
@@ -267,6 +282,7 @@ void NetworkTray::slotTriggerFileChanged() {
 }
 
 void NetworkTray::monitorStatus(bool noloop) {
+  if(PICOSESSION){ updateWifiNetworks(); return; } //nothing to monitor - just create tray menu
   // Start checking to see if the device has changed, and if it has inform the user
   //QString tmp;  
   QIcon Icon;
@@ -351,18 +367,20 @@ void NetworkTray::monitorStatus(bool noloop) {
 
 // If the user wants to restart the network, do so
 void NetworkTray::slotRestartNetwork() {
+  if(PICOSESSION){ return; }
   //trayIcon->showMessage( tr("Please Wait"),tr("Restarting Network"),QSystemTrayIcon::NoIcon,5000);  
   trueos::Utils::restartNetworking();
 }
 
 void NetworkTray::openNetManager() {
+  if(PICOSESSION){ return; }
   QString arguments = "pc-netmanager";
   if(getuid()!=0){ arguments.prepend("sudo "); }
   trueos::Utils::runShellCommand(arguments);
 }
 
 void  NetworkTray::openDeviceInfo() {
-
+  if(PICOSESSION){ return; }
   QString program = "sudo";
   QStringList arguments;
   if ( !DEVICE->isWireless() )
@@ -379,6 +397,7 @@ void  NetworkTray::openDeviceInfo() {
 
 QString NetworkTray::getMediaForIdent()
 {
+  if(PICOSESSION){ return ""; }
   QString inputLine = ifconfigOutput;
   QString status = "";
 
@@ -392,6 +411,7 @@ QString NetworkTray::getMediaForIdent()
 
 void NetworkTray::slotUpdateIfStatus()
 {
+  if(PICOSESSION){ return; }
    QProcess *getIfProc = new QProcess();
    getIfProc->start(IFCONFIG, QStringList() << DEVICE->device());
    while(getIfProc->state() == QProcess::Starting || getIfProc->state() == QProcess::Running) {
@@ -411,6 +431,7 @@ void NetworkTray::slotUpdateIfStatus()
 }
 
 void NetworkTray::slotCheckWifiAvailability(){
+  if(PICOSESSION){ return; }
   if( DEVICE->isWireless() ){
     //Show a message if the wifi is down
     if( !DEVICE->isUp() ){
@@ -421,19 +442,20 @@ void NetworkTray::slotCheckWifiAvailability(){
 
 void NetworkTray::updateWifiNetworks(){
   // Change the right-click of the tray icon to show all available wireless networks
-  
+   
+ //Redo the tray menu
+  if(trayIconMenu==0){
+    trayIconMenu = new QMenu(this);
+    trayActionGroup = new QActionGroup(this);
+  }else{
+    trayIconMenu->clear();
+  }
+if(!PICOSESSION){
+  trayIconMenu->addSeparator();
+  QIcon ssidIcon;
   //update the list of wifi networks available
   QString cmd = "ifconfig "+DEVICE->device()+" list scan";
   QStringList wifinet = trueos::Utils::runShellCommand(cmd);
- 
- //Redo the tray menu
-  trayIconMenu = new QMenu(this);
-  trayActionGroup = new QActionGroup(this);
-  trayIconMenu->clear();
-  //QAction *act = trayIconMenu->addAction( tr("Wifi Quick-Connect") );
-  //act->setEnabled(false);
-  trayIconMenu->addSeparator();
-  QIcon ssidIcon;
  //add an entry for each wifi network detected
   for(int i=1; i<wifinet.length(); i++){ //skip the first line (labels)
     //Get the ssid and Security for this network
@@ -483,7 +505,7 @@ void NetworkTray::updateWifiNetworks(){
       }
     }
     } //end of the empty ssid check
-  }
+  } //end loop over wifinet
   //Connect the actionGroup signal with slotQuickConnect
   QObject::connect(trayActionGroup, SIGNAL(triggered(QAction*)),this,SLOT(slotGetNetKey(QAction*)));
   //Add the configuration options to the bottom
@@ -498,6 +520,7 @@ void NetworkTray::updateWifiNetworks(){
     tmp->setChecked(checkTorMode());
     connect(tmp, SIGNAL(toggled(bool)), this, SLOT(slotToggleTorMode(bool)) );
   }
+}// end PICOSESSION check - PICO sessions don't need anything other than "close"
   trayIconMenu->addAction( tr("Close the Network Monitor"), this, SLOT(slotQuit()));
   
   //attach the new menu to the tray
@@ -506,6 +529,7 @@ void NetworkTray::updateWifiNetworks(){
 }
 
 void NetworkTray::slotGetNetKey(QAction* act){
+  if(PICOSESSION){ return; }
   //Get the small SSID from the action 
   QString smSSID = act->objectName();
   //trim the small ssid to remove any dots at the end
@@ -537,6 +561,7 @@ void NetworkTray::slotGetNetKey(QAction* act){
 }
 
 void NetworkTray::slotQuickConnect(QString key,QString SSID, bool hexkey){
+  if(PICOSESSION){ return; }
   
   //Run the wifiQuickConnect function
   NetworkInterface::wifiQuickConnect(SSID,key,DEVICE->device(), hexkey);
@@ -547,11 +572,13 @@ void NetworkTray::slotQuickConnect(QString key,QString SSID, bool hexkey){
 }
 
 void NetworkTray::slotToggleTorMode(bool enable){
+  if(PICOSESSION){ return; }
   if(enable){ QProcess::startDetached("qsudo enable-tor-mode"); }
   else{ QProcess::startDetached("qsudo disable-tor-mode"); }
 }
 
 bool NetworkTray::checkTorMode(){
+  if(PICOSESSION){ return false; }
   static bool lastcheck = false;
   bool running = (0 == QProcess::execute("enable-tor-mode -c") );// 0 if *in* TOR mode, 1 if not
   if(lastcheck != running && running){

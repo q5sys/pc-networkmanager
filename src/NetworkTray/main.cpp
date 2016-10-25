@@ -17,8 +17,11 @@
 
 #define PREFIX QString("/usr/local")
 
+bool PICOSESSION = false;
 
 int  main(int argc, char *argv[]) {
+
+  PICOSESSION = !QString(getenv("PICO_CLIENT_LOGIN")).isEmpty();
 
   QString dev;
   if(argc==1){
@@ -31,7 +34,7 @@ int  main(int argc, char *argv[]) {
     for(int i=0; i<wifi.length(); i++){
       devs.removeAll(wifi[i]); //already handled
       if(i==0){ dev = wifi[i]; } //use the first wifi device
-      else{
+      else if(!PICOSESSION){
         //multiple wifi devices - open more tray devices
         QProcess::startDetached("pc-nettray "+devs[i]);
       }
