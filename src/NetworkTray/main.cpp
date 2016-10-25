@@ -23,8 +23,8 @@ int  main(int argc, char *argv[]) {
 
   PICOSESSION = !QString(getenv("PICO_CLIENT_LOGIN")).isEmpty();
 
-  QString dev;
-  if(argc==1){
+  QString dev = (PICOSESSION ? "PICOSESSION" : "");
+  if(argc==1 && !PICOSESSION){
     //no device specified - automatically figure out which one(s) to use
    QStringList devs = backend::NetDevice::listNetDevices();
    QStringList wifi = devs.filter("wlan");
@@ -45,7 +45,7 @@ int  main(int argc, char *argv[]) {
       dev = devs[i];
     }
     
-  }else{
+  }else if(argc>=2){
     dev = argv[1];
   }
   qDebug() << "Using device:" << dev;

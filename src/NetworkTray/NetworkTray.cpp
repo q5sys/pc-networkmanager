@@ -219,8 +219,9 @@ void  NetworkTray::displayTooltip() {
   QString  tooltipStr;
   if(PICOSESSION){
     QString sshinfo = getenv("SSH_CONNECTION");
-    QString auth = getenv("PICO_CLIENT_AUTH");
+    QString auth = getenv("PICO_CLIENT_LOGIN");
     tooltipStr = QString( tr("PICO Connection: %1") ).arg(auth);
+    tooltipStr += "<br>-----------------------------------";
     tooltipStr += "<br>"+ QString(tr("Client IP: %1")).arg(sshinfo.section(" ",0,0));
     tooltipStr += "<br>"+ QString(tr("Host IP: %1")).arg(sshinfo.section(" ",2,2));
   }else{
