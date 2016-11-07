@@ -1,7 +1,7 @@
 [Desktop Entry]
 Version=1.0
 Name=Network Manager
-Exec=pc-netmanager
+Exec=sudo pc-netmanager
 TryExec=pc-netmanager
 Terminal=false
 Type=Application
