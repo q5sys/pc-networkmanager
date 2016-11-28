@@ -117,7 +117,7 @@ void ethernetconfig::slot_apply()
     } else {
 	// Using WPAE config?
 	if ( groupWPAE->isChecked() )
-	  ifConfigLine="WPA SYNCDHCP";
+	  ifConfigLine="WPA DHCP";
 	else
 	  ifConfigLine="DHCP";
     }

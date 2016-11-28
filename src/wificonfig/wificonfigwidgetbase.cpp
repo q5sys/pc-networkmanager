@@ -66,7 +66,7 @@ void wificonfigwidgetbase::slotApply()
 	    ifConfigLine=lineIP->text() + " netmask " + lineNetmask->text() + " ether " + lineMAC->text();
 
     } else {
-	ifConfigLine="SYNCDHCP";
+	ifConfigLine="DHCP";
     } 
 
     // See if we need to enable a country code
@@ -256,7 +256,7 @@ void wificonfigwidgetbase::updateWPASupp()
     if ( listEmpty  && ! WPAONLY ){
        fileout.remove();
        trueos::Utils::setConfFileValue( "/etc/rc.conf", "ifconfig_lagg0", "", -1);
-       trueos::Utils::setConfFileValue( "/etc/rc.conf", "ifconfig_" + DeviceName, "ifconfig_" + DeviceName + "=\"SYNCDHCP\"");
+       trueos::Utils::setConfFileValue( "/etc/rc.conf", "ifconfig_" + DeviceName, "ifconfig_" + DeviceName + "=\"DHCP\"");
     }  
 
 }
