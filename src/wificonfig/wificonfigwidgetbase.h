@@ -48,7 +48,7 @@ public:
     void showInfo();
     // Are we just editing WPA supplicant? 
     void setModeWPAOnly();
-
+    void autoConnectSSID(QString ssid);
 
 public slots:
 
@@ -126,7 +126,6 @@ private:
     bool WPAONLY;
 
 signals:
-
+  void connectSSID(QString); //internal signal for launching the connection dialog for an SSID
 } ;
 #endif // WIFICONFIGWIDGETBASE_H
-

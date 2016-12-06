@@ -30,6 +30,15 @@ void wificonfigwidgetbase::slotClose()
     exit(0);
 }
 
+void wificonfigwidgetbase::autoConnectSSID(QString ssid){
+  //Public function for launching a connection to a designated SSID *instantly* on UI open
+  // - Do any pre-connection setup
+
+  // - Launch the SSID password dialog
+  connect(this, SIGNAL(connectSSID(QString)), this, SLOT(slotAddNewProfileSSID(QString)) );
+  emit connectSSID(ssid);
+}
+
 void wificonfigwidgetbase::slotApply()
 {
     QString tmp;

@@ -377,7 +377,7 @@ void NetworkTray::monitorStatus(bool noloop) {
 void NetworkTray::slotRestartNetwork() {
   if(PICOSESSION){ return; }
   //trayIcon->showMessage( tr("Please Wait"),tr("Restarting Network"),QSystemTrayIcon::NoIcon,5000);  
-  trueos::Utils::restartNetworking();
+  QProcess::startDetached("qsudo service network restart");
 }
 
 void NetworkTray::openNetManager() {
@@ -548,8 +548,10 @@ void NetworkTray::slotGetNetKey(QAction* act){
   QStringList wdat = NetworkInterface::parseWifiScanLine(dat,true);
   QString SSID = wdat[0];
   
+  //Now forward this SSID connection over to the root-permissioned utility
+  QProcess::startDetached("sudo pc-wificonfig --connect-ssid \""+SSID+"\" \""+DEVICE->device()+"\"");
   //Get the Security Type
-  QString sectype = wdat[6];
+  /*QString sectype = wdat[6];
   
   if(sectype == "None"){
     //run the Quick-Connect slot without a key
@@ -565,7 +567,7 @@ void NetworkTray::slotGetNetKey(QAction* act){
     connect(dialogNetKey,SIGNAL( saved(QString,QString,bool) ),this,SLOT( slotQuickConnect(QString,QString,bool) ) );
     //Activate the dialog
     dialogNetKey->exec();
-  }
+  }*/
 }
 
 void NetworkTray::slotQuickConnect(QString key,QString SSID, bool hexkey){

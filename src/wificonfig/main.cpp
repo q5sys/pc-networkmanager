@@ -41,6 +41,11 @@ int main( int argc, char ** argv )
 	 w.setDevice(Device);
 	 w.showInfo();
 	 w.show();
+     } else if( argc ==4){
+        if( QString(argv[1]) != "--connect-ssid" ){ exit(1); }
+        w.setDevice( QString(argv[3]) );
+        w.show();
+        w.autoConnectSSID( QString(argv[2]) );
      } else {
 		exit(1);
      }
