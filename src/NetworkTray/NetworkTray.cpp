@@ -131,7 +131,7 @@ QString NetworkTray::getSignalStrengthForIdent( QString ident )
 {
   if(PICOSESSION){ return ""; }
   // Get the signal strength of this device
-  QString command = IFCONFIG + " " + ident + " list scan | grep " + DeviceSSID;
+  QString command = IFCONFIG + " " + ident + " up list scan | grep " + DeviceSSID;
   QString line = getLineFromCommandOutput(command);
   QString tmp, sig, noise;
   bool ok, ok2;
