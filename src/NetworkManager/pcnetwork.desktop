@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
-Exec=sudo pc-netmanager
+Exec=qsudo pc-netmanager
+TryExec=pc-netmanager
 Icon=network-wired
 Type=Application
 
