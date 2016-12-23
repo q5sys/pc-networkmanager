@@ -549,7 +549,7 @@ void NetworkMan::loadGlobals()
     if( 0 == system("service dhclient status") ){
       tmp = trueos::Utils::getConfFileValue("/etc/dhclient.conf", "supersede domain-name-servers", 1);
     }else if( 0 == system("service dhcpcd status")){
-      tmp = trueos::Utils::getConfFileValue("/usr/local/etc/dhcpcd.conf", "static_routers", 1);
+      tmp = trueos::Utils::getConfFileValue("/usr/local/etc/dhcpcd.conf", "static domain_name_servers", 1);
     }
     if ( tmp.isEmpty() )
        groupDNS->setChecked(false);
@@ -926,8 +926,10 @@ void NetworkMan::slotSave()
     
    if ( lineGateway->text() == "..." || ! groupGateway->isChecked() ) {
      trueos::Utils::setConfFileValue("/etc/rc.conf", "defaultrouter=", "", -1);
+     trueos::Utils::setConfFileValue("/usr/local/etc/dhcpcd.conf","static routers=","",-1);
    } else {
      trueos::Utils::setConfFileValue("/etc/rc.conf", "defaultrouter=", "defaultrouter=\"" + lineGateway->text() + "\"", -1);  
+     trueos::Utils::setConfFileValue("/usr/local/etc/dhcpcd.conf","static routers=","static routers=\""+lineGateway->text()+"\"",-1);
    }
    
    int DNSline = 1;
@@ -959,16 +961,16 @@ void NetworkMan::slotSave()
    // If we have custom DNS, make sure it survives a dhclient/dhcpcd run
    if ( lineDNS1->text() != "..." && lineDNS2->text() != "..." && groupDNS->isChecked() ){
      trueos::Utils::setConfFileValue("/etc/dhclient.conf", "supersede domain-name-servers", "supersede domain-name-servers " + lineDNS1->text() + ", " + lineDNS2->text() +";");  
-     trueos::Utils::setConfFileValue("/usr/local/etc/dhcpcd.conf", "static_routers", "static_routers=" + lineDNS1->text() + ", " + lineDNS2->text() +";");  
+     trueos::Utils::setConfFileValue("/usr/local/etc/dhcpcd.conf", "static domain_name_servers=", "static domain_name_servers=" + lineDNS1->text() + ", " + lineDNS2->text());  
    }else if ( lineDNS1->text() != "..." ){
      trueos::Utils::setConfFileValue("/etc/dhclient.conf", "supersede domain-name-servers", "supersede domain-name-servers " + lineDNS1->text() +";");  
-     trueos::Utils::setConfFileValue("/usr/local/etc/dhcpcd.conf", "static_routers", "static_routers="  + lineDNS1->text() +";");  
+     trueos::Utils::setConfFileValue("/usr/local/etc/dhcpcd.conf", "static domain_name_servers=", "static domain_name_servers="  + lineDNS1->text());  
    }else if ( lineDNS2->text() != "..." ){
      trueos::Utils::setConfFileValue("/etc/dhclient.conf", "supersede domain-name-servers", "supersede domain-name-servers " + lineDNS2->text() +";");  
-     trueos::Utils::setConfFileValue("/usr/local/etc/dhcpcd.conf", "static_routers", "static_routers=" + lineDNS2->text() +";");  
+     trueos::Utils::setConfFileValue("/usr/local/etc/dhcpcd.conf", "static domain_name_servers=", "static domain_name_servers=" + lineDNS2->text());  
    }else{
      trueos::Utils::setConfFileValue("/etc/dhclient.conf", "supersede domain-name-servers", "");  
-     trueos::Utils::setConfFileValue("/usr/local/etc/dhcpcd.conf", "static_routers", "");  
+     trueos::Utils::setConfFileValue("/usr/local/etc/dhcpcd.conf", "static domain_name_servers=", "");  
    }
 
    if ( lineSearchDomain->text().isEmpty() || ! groupDNS->isChecked() ) {
