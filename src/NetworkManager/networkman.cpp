@@ -926,10 +926,10 @@ void NetworkMan::slotSave()
     
    if ( lineGateway->text() == "..." || ! groupGateway->isChecked() ) {
      trueos::Utils::setConfFileValue("/etc/rc.conf", "defaultrouter=", "", -1);
-     trueos::Utils::setConfFileValue("/usr/local/etc/dhcpcd.conf","static routers=","",-1);
+     trueos::Utils::setConfFileValue("/usr/local/etc/dhcpcd.conf","option static routers=","",-1);
    } else {
      trueos::Utils::setConfFileValue("/etc/rc.conf", "defaultrouter=", "defaultrouter=\"" + lineGateway->text() + "\"", -1);  
-     trueos::Utils::setConfFileValue("/usr/local/etc/dhcpcd.conf","static routers=","static routers=\""+lineGateway->text()+"\"",-1);
+     trueos::Utils::setConfFileValue("/usr/local/etc/dhcpcd.conf","option static routers=","option static routers=\""+lineGateway->text()+"\"",-1);
    }
    
    int DNSline = 1;
