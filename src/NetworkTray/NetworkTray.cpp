@@ -130,8 +130,8 @@ QString NetworkTray::getSSIDForIdent()
 QString NetworkTray::getSignalStrengthForIdent( QString ident )
 {
   if(PICOSESSION){ return ""; }
-  // Get the signal strength of this device
-  QString command = IFCONFIG + " " + ident + " up list scan | grep " + DeviceSSID;
+  // Get the signal strength of this device (User permissions - cannot "up" the device)
+  QString command = IFCONFIG + " " + ident + " list scan | grep " + DeviceSSID;
   QString line = getLineFromCommandOutput(command);
   QString tmp, sig, noise;
   bool ok, ok2;
@@ -377,7 +377,7 @@ void NetworkTray::monitorStatus(bool noloop) {
 void NetworkTray::slotRestartNetwork() {
   if(PICOSESSION){ return; }
   //trayIcon->showMessage( tr("Please Wait"),tr("Restarting Network"),QSystemTrayIcon::NoIcon,5000);  
-  QProcess::startDetached("qsudo service network restart");
+  QProcess::startDetached("qsudo service network."+DEVICE->device()+" restart");
 }
 
 void NetworkTray::openNetManager() {
@@ -455,6 +455,8 @@ void NetworkTray::updateWifiNetworks(){
   if(trayIconMenu==0){
     trayIconMenu = new QMenu(this);
     trayActionGroup = new QActionGroup(this);
+    //Connect the actionGroup signal with slotQuickConnect
+    QObject::connect(trayActionGroup, SIGNAL(triggered(QAction*)),this,SLOT(slotGetNetKey(QAction*)));
   }else{
     trayIconMenu->clear();
   }
@@ -514,8 +516,7 @@ if(!PICOSESSION){
     }
     } //end of the empty ssid check
   } //end loop over wifinet
-  //Connect the actionGroup signal with slotQuickConnect
-  QObject::connect(trayActionGroup, SIGNAL(triggered(QAction*)),this,SLOT(slotGetNetKey(QAction*)));
+
   //Add the configuration options to the bottom
   trayIconMenu->addSeparator();
   trayIconMenu->addAction( tr("Configure ") + DEVICE->device(), this, SLOT(openConfigDlg()));
@@ -549,6 +550,7 @@ void NetworkTray::slotGetNetKey(QAction* act){
   QString SSID = wdat[0];
   
   //Now forward this SSID connection over to the root-permissioned utility
+  qDebug() << "Launch pc-wificonfig to open SSID:" << SSID;
   QProcess::startDetached("sudo pc-wificonfig --connect-ssid \""+SSID+"\" \""+DEVICE->device()+"\"");
   //Get the Security Type
   /*QString sectype = wdat[6];
