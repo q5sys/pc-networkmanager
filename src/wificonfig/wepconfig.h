@@ -24,8 +24,9 @@ public:
 public slots:
 
 private slots:
-   void slotClose();
-   void slotShowKey();
+   void on_buttonBox_clicked(QAbstractButton *);
+   void saveAndClose();
+   void on_checkShowKey_clicked(bool checked);
 
 private:
 
