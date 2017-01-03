@@ -1,3 +1,6 @@
+#include "wepconfig.h"
+#include "dialogwpapersonal.h"
+#include "dialogwpaenterprise.h"
 #include "wifiselectiondialog.h"
 #include "ui_wifiselectiondialog.h"
 #include <qtextstream.h>
@@ -286,14 +289,14 @@ void wifiselectiondialog::slotConfigWPAP()
 void wifiselectiondialog::slotConfigWPAE()
 {
    // Bring up the WPA-Enterprise config dialog
-    
-   dialogWPAE libWPAE;
-   
+
+   dialogWPAEnterprise libWPAE;
+
    if ( ! WPAEIdent.isEmpty() )
    {
        libWPAE.setVariables(WPAEType, WPAEIdent, WPAEAnonIdent, WPAECACert, WPAEClientCert, WPAEPrivKeyFile, WPAEPassword, WPAEKeyMgmt, WPAEPhase2);
    }
-   
+
    connect( &libWPAE, SIGNAL( saved(int, QString, QString, QString, QString, QString, QString, int, int) ), this, SLOT( slotWPAEChanged(int, QString, QString, QString, QString, QString, QString, int, int) ) );
    libWPAE.exec();
 }
