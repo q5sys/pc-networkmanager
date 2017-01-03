@@ -53,9 +53,6 @@ private:
 
     // Setup our dialogs
     wifiscanssid *dialogWifiscanssid;
-    wepConfig *dialogWEP;
-    dialogWPAPersonal *dialogWPAP;
-    dialogWPAE *libWPAE;
 
     // WEP variables
     QString WEPKey;

@@ -185,15 +185,15 @@ void wifiselectiondialog::initEdit(QString selectedSSID, bool usingBSSID)
 
 void wifiselectiondialog::slotConfigWEP()
 {
-   dialogWEP = new wepConfig();
+   wepConfig dialogWEP;
    
    if ( ! WEPKey.isEmpty() )
    {
-       dialogWEP->setKey(WEPKey, WEPIndex, WEPHex);
+       dialogWEP.setKey(WEPKey, WEPIndex, WEPHex);
    }
    
-   connect( dialogWEP, SIGNAL( saved(QString, int, bool) ), this, SLOT( slotWEPChanged(QString, int, bool) ) ); 
-   dialogWEP->exec();
+   connect( &dialogWEP, SIGNAL( saved(QString, int, bool) ), this, SLOT( slotWEPChanged(QString, int, bool) ) ); 
+   dialogWEP.exec();
 }
 
 
@@ -270,15 +270,15 @@ void wifiselectiondialog::slotConfigWPAP()
 {
     // Bring up the WPA-Personal config dialog
     
-   dialogWPAP = new dialogWPAPersonal();
+   dialogWPAPersonal dialogWPAP;
    
    if ( ! WPAPersonalKey.isEmpty() )
    {
-       dialogWPAP->setKey(WPAPersonalKey);
+       dialogWPAP.setKey(WPAPersonalKey);
    }
    
-   connect( dialogWPAP, SIGNAL( saved(QString) ), this, SLOT( slotWPAPChanged(QString) ) ); 
-   dialogWPAP->exec();
+   connect( &dialogWPAP, SIGNAL( saved(QString) ), this, SLOT( slotWPAPChanged(QString) ) ); 
+   dialogWPAP.exec();
 
 }
 
@@ -287,15 +287,15 @@ void wifiselectiondialog::slotConfigWPAE()
 {
    // Bring up the WPA-Enterprise config dialog
     
-   libWPAE = new dialogWPAE();
+   dialogWPAE libWPAE;
    
    if ( ! WPAEIdent.isEmpty() )
    {
-       libWPAE->setVariables(WPAEType, WPAEIdent, WPAEAnonIdent, WPAECACert, WPAEClientCert, WPAEPrivKeyFile, WPAEPassword, WPAEKeyMgmt, WPAEPhase2);
+       libWPAE.setVariables(WPAEType, WPAEIdent, WPAEAnonIdent, WPAECACert, WPAEClientCert, WPAEPrivKeyFile, WPAEPassword, WPAEKeyMgmt, WPAEPhase2);
    }
    
-   connect( libWPAE, SIGNAL( saved(int, QString, QString, QString, QString, QString, QString, int, int) ), this, SLOT( slotWPAEChanged(int, QString, QString, QString, QString, QString, QString, int, int) ) );
-   libWPAE->exec();
+   connect( &libWPAE, SIGNAL( saved(int, QString, QString, QString, QString, QString, QString, int, int) ), this, SLOT( slotWPAEChanged(int, QString, QString, QString, QString, QString, QString, int, int) ) );
+   libWPAE.exec();
 }
 
 
