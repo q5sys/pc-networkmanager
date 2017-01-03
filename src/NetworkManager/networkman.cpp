@@ -155,12 +155,12 @@ void NetworkMan::detectDev()
 
                 // Place a message box prompt here
                 QMessageBox msgBox;
-                msgBox.setText("A new wireless device (" + dev + ") has been detected.");
-	        msgBox.setInformativeText("Do you want to enable this device now?");
- 	        msgBox.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-    	        msgBox.setDefaultButton(QMessageBox::Yes);
- 	        int ret = msgBox.exec();
-                if ( ret == QMessageBox::Yes )
+                msgBox.setText(tr("A new wireless device (%1) has been detected.").arg(dev));
+	        msgBox.setInformativeText(tr("Do you want to enable this device now?"));
+                auto enableButton = msgBox.addButton(tr("Enable"), QMessageBox::AcceptRole);
+                msgBox.addButton(QMessageBox::Cancel);
+ 	        msgBox.exec();
+                if ( msgBox.clickedButton() == enableButton )
                 {
                   // Get the next available wlan[0-9] device
                   tmp = getNextAvailWlan();
