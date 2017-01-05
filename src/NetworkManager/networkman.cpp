@@ -914,7 +914,7 @@ void NetworkMan::slotSave()
             trueos::Utils::setConfFileValue("/etc/rc.conf", "hostname=", "hostname=\"" + lineHostname->text() + "." + lineDomainName->text() + "\"", -1);
             trueos::Utils::setConfFileValue("/etc/hosts", "::1", "::1\t\t\tlocalhost " + lineHostname->text() + "." + lineDomainName->text() + " " + lineHostname->text(), -1);
             trueos::Utils::setConfFileValue("/etc/hosts", "127.0.0.1", "127.0.0.1\t\tlocalhost " + lineHostname->text() + "." + lineDomainName->text() + " " + lineHostname->text(), -1);
-            QMessageBox::information(this,tr("Computer Restart Required"), tr("You must restart your computer to finish changing your hostname, and domain name") );
+            //QMessageBox::information(this,tr("Computer Restart Required"), tr("You must restart your computer to finish changing your hostname, and domain name") );
    }
 
     else if ( !lineHostname->text().isEmpty() && (lineHostname->text().toLower() != trueos::Utils::getConfFileValue("/etc/rc.conf", "hostname=", 1).toLower() ) ) {
@@ -961,7 +961,7 @@ void NetworkMan::slotSave()
    // If we have custom DNS, make sure it survives a dhclient/dhcpcd run
    if ( lineDNS1->text() != "..." && lineDNS2->text() != "..." && groupDNS->isChecked() ){
      trueos::Utils::setConfFileValue("/etc/dhclient.conf", "supersede domain-name-servers", "supersede domain-name-servers " + lineDNS1->text() + ", " + lineDNS2->text() +";");  
-     trueos::Utils::setConfFileValue("/usr/local/etc/dhcpcd.conf", "static domain_name_servers=", "static domain_name_servers=" + lineDNS1->text() + ", " + lineDNS2->text());  
+     trueos::Utils::setConfFileValue("/usr/local/etc/dhcpcd.conf", "static domain_name_servers=", "static domain_name_servers=" + lineDNS1->text() + " " + lineDNS2->text());  
    }else if ( lineDNS1->text() != "..." ){
      trueos::Utils::setConfFileValue("/etc/dhclient.conf", "supersede domain-name-servers", "supersede domain-name-servers " + lineDNS1->text() +";");  
      trueos::Utils::setConfFileValue("/usr/local/etc/dhcpcd.conf", "static domain_name_servers=", "static domain_name_servers="  + lineDNS1->text());  
