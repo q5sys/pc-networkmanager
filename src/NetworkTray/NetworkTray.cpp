@@ -377,7 +377,7 @@ void NetworkTray::monitorStatus(bool noloop) {
 void NetworkTray::slotRestartNetwork() {
   if(PICOSESSION){ return; }
   //trayIcon->showMessage( tr("Please Wait"),tr("Restarting Network"),QSystemTrayIcon::NoIcon,5000);  
-  QProcess::startDetached("qsudo service network."+DEVICE->device()+" restart");
+  QProcess::startDetached("qsudo service network restart");
 }
 
 void NetworkTray::openNetManager() {
