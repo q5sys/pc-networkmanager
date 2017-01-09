@@ -11,8 +11,17 @@
 *****************************************************************************/
 #include "wepconfig.h"
 #include "ui_wepconfig.h"
+#include <QDialogButtonBox>
 
 
+void wepConfig::on_buttonBox_clicked(QAbstractButton *button)
+{
+    if (buttonBox->standardButton(button) == QDialogButtonBox::Ok) {
+        saveAndClose();
+    } else { // the cancel button
+        close();
+    }
+}
 
 void wepConfig::setKey( QString Key, int index, bool wephex )
 {
@@ -20,7 +29,6 @@ void wepConfig::setKey( QString Key, int index, bool wephex )
     if ( ! Key.isEmpty() )
     {
 	lineKey->setText(Key);
-	lineKey2->setText(Key);
     }
  
     // Set if we are using plaintext or a hex key
@@ -41,7 +49,7 @@ void wepConfig::setKey( QString Key, int index, bool wephex )
 }
 
 
-void wepConfig::slotClose()
+void wepConfig::saveAndClose()
 {
     //bool ok;
     //lineKey->text().toInt(&ok, 16);
@@ -52,29 +60,20 @@ void wepConfig::slotClose()
     //   QMessageBox::warning( this, tr("Hex Key"), tr("Error: The specified key is not a valid hex key.") );
     //   return;
     //}
-    
 
-    if ( lineKey->text() != lineKey2->text() )
-    {
-	QMessageBox::warning( this, "Network Key Error", "Error: The entered network keys do not match!\n" );
+    if ( radioHex->isChecked() ) {
+        emit saved(lineKey->text(), spinIndex->value(), true);
     } else {
-	if ( radioHex->isChecked() ) {
-  	  emit saved(lineKey->text(), spinIndex->value(), true);
-        } else {
-          emit saved(lineKey->text(), spinIndex->value(), false);
-        }
-	close();
+        emit saved(lineKey->text(), spinIndex->value(), false);
     }
+    close();
 }
 
-void wepConfig::slotShowKey()
+void wepConfig::on_checkShowKey_clicked(bool checked)
 {
-   if(checkShowKey->isChecked())
-   {
-      lineKey2->setEchoMode(QLineEdit::Normal);
+   if(checked) {
       lineKey->setEchoMode(QLineEdit::Normal);
    } else {
-      lineKey2->setEchoMode(QLineEdit::Password);
       lineKey->setEchoMode(QLineEdit::Password);
    }
 }

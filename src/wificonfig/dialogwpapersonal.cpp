@@ -11,41 +11,39 @@
 *****************************************************************************/
 #include "dialogwpapersonal.h"
 #include "ui_dialogwpapersonal.h"
+#include <QDialogButtonBox>
 
 
 void dialogWPAPersonal::setKey( QString Key )
 {
     lineKey->setText(Key);
-    lineKey2->setText(Key);
 }
 
-
-void dialogWPAPersonal::slotClose()
+void dialogWPAPersonal::on_buttonBox_clicked(QAbstractButton *button)
 {
-  if ( lineKey->text() != lineKey2->text() )
-  {
-     QMessageBox::warning( this, "Network Key Error", "Error: The entered network keys do not match!\n" );
-     return;
-  } 
-  
-  if ( lineKey->text().length() < 8 || lineKey->text().length() > 63 )
-  {
+    if (buttonBox->standardButton(button) == QDialogButtonBox::Ok) {
+        saveAndClose();
+    } else { // the cancel button
+        close();
+    }
+}
+
+void dialogWPAPersonal::saveAndClose()
+{
+  if ( lineKey->text().length() < 8 || lineKey->text().length() > 63 ) {
      QMessageBox::warning( this, "Network Key Error", "Error: The network key must be between 8-63 characters in length!\n" );
      return;
-  } 
+  }
 
   emit saved(lineKey->text());
   close();
 }
 
-void dialogWPAPersonal::slotShowKey()
+void dialogWPAPersonal::on_checkShowKey_clicked(bool checked)
 {
-   if(checkShowKey->isChecked())
-   {
-      lineKey2->setEchoMode(QLineEdit::Normal);
+   if(checked) {
       lineKey->setEchoMode(QLineEdit::Normal);
    } else {
-      lineKey2->setEchoMode(QLineEdit::Password);
       lineKey->setEchoMode(QLineEdit::Password);
    }
 }

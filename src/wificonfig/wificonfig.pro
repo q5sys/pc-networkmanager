@@ -5,11 +5,11 @@ CONFIG	+= qt warn_on release
 
 LIBS	+= -L/usr/local/lib -ltrueos-utils -ltrueos-ui
 
-HEADERS	+= dialogwpapersonal.h wepconfig.h wificonfigwidgetbase.h wifiscanssid.h wifiselectiondialog.h
+HEADERS	+= dialogwpaenterprise.h dialogwpapersonal.h wepconfig.h wificonfigwidgetbase.h wifiscanssid.h wifiselectiondialog.h
 
-SOURCES	+= dialogwpapersonal.cpp main.cpp wepconfig.cpp wificonfigwidgetbase.cpp wifiscanssid.cpp wifiselectiondialog.cpp
+SOURCES	+= dialogwpaenterprise.cpp dialogwpapersonal.cpp main.cpp wepconfig.cpp wificonfigwidgetbase.cpp wifiscanssid.cpp wifiselectiondialog.cpp
 
-FORMS += dialogwpapersonal.ui wepconfig.ui wificonfigwidgetbase.ui wifiscanssid.ui wifiselectiondialog.ui
+FORMS += dialogwpaenterprise.ui dialogwpapersonal.ui wepconfig.ui wificonfigwidgetbase.ui wifiscanssid.ui wifiselectiondialog.ui
 
 RESOURCES += wificonfig.qrc
 

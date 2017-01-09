@@ -1,0 +1,6 @@
+Makefile
+*.o
+moc*.cpp
+ui_*.h
+qrc_*.cpp
+pc-*

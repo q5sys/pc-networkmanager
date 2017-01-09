@@ -4,12 +4,9 @@
 #include <qfile.h>
 #include <qmessagebox.h>
 #include <qdialog.h>
-#include "wepconfig.h"
-#include "dialogwpapersonal.h"
 #include "wifiscanssid.h"
 #include "ui_wifiselectiondialog.h"
 #include "trueos-utils.h"
-#include "trueos-ui.h"
 
 class wifiselectiondialog : public QDialog, private Ui::wifiselectiondialog
 {
@@ -53,9 +50,6 @@ private:
 
     // Setup our dialogs
     wifiscanssid *dialogWifiscanssid;
-    wepConfig *dialogWEP;
-    dialogWPAPersonal *dialogWPAP;
-    dialogWPAE *libWPAE;
 
     // WEP variables
     QString WEPKey;
