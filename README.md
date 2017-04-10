@@ -16,45 +16,6 @@ Home of the TrueOS Network Manager Qt GUI
 
 <!-- END GENERAL INFO TOC -->
 
-# SysAdm Qt Client
-
-Official repo for TrueOS' sysadm WebSocket Client
-
-This multi-platform client is designed to work with [TrueOS' sysadm server](https://github.com/trueos/sysadm) <br />
-for administration of Free/TrueOS systems
-
-### Required Qt Modules
-
-```
-Qt5 Core (pkg install qt5-core)
-Qt5 Gui (pkg install qt5-gui)
-Qt5 Concurrent (pkg install qt5-concurrent)
-Qt5 Websockets (pkg install qt5-websockets)
-```
-
-### Building SysAdm Qt Client
-
-```
-% git clone https://github.com/trueos/sysadm-ui-qt.git
-% cd sysadm/src-qt5
-% /usr/local/lib/qt5/bin/qmake -recursive
-% make && sudo make install
-```
-
-### Starting SysAdm Client
-
-```
-(For GUI interface)
-% gui_client/sysadm-client
-
-(For CLI interface)
-% cli_client/sysadm-client
-```
-
-### Websockets API Documentation
-
-https://api.pcbsd.org
-
 # General TrueOS Information
 
 This section describes where you can find more information about TrueOS and its related projects, file new issues on GitHub, and converse with other users or contributors to the project.
