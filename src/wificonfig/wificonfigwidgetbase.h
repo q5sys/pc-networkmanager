@@ -99,10 +99,7 @@ private:
     void updateWPASupp();
     QString DeviceName;
     QString Country;
-    
-    dialogWPAPersonal *dialogWPA;
-    wepConfig *dialogWEP;
-    wifiselectiondialog *wifiselect;
+
     QProcess *netifProc;
 
     // Lets define our arrays for the SSID profiles

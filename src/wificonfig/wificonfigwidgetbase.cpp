@@ -649,35 +649,35 @@ void wificonfigwidgetbase::slotEditProfile()
       if (foundSSID)
       {
           // Set our internal flag that this is an edit on an existing device
-          wifiselect = new wifiselectiondialog();
-          wifiselect->init(DeviceName);
-          wifiselect->setWPAOnly(WPAONLY);
+          wifiselectiondialog wifiselect;
+          wifiselect.init(DeviceName);
+          wifiselect.setWPAOnly(WPAONLY);
 
           // Check the type of SSID this is, and issue appropriate edit 
           if ( SSIDEncType[curItem] == NO_ENCRYPTION) {
-             wifiselect->initEdit(SSIDList[curItem], BSSID[curItem]);
+             wifiselect.initEdit(SSIDList[curItem], BSSID[curItem]);
           }
           if ( SSIDEncType[curItem] == WEP_ENCRYPTION) {
-             wifiselect->initEdit(SSIDList[curItem], BSSID[curItem], WEPKey[curItem], WEPIndex[curItem], WEPHex[curItem]);
+             wifiselect.initEdit(SSIDList[curItem], BSSID[curItem], WEPKey[curItem], WEPIndex[curItem], WEPHex[curItem]);
           }
           if ( SSIDEncType[curItem] == WPA_ENCRYPTION) {
-             wifiselect->initEdit(SSIDList[curItem], BSSID[curItem], WPAPersonalKey[curItem]);
+             wifiselect.initEdit(SSIDList[curItem], BSSID[curItem], WPAPersonalKey[curItem]);
           }
           if ( SSIDEncType[curItem] == WPAE_ENCRYPTION) {
-             wifiselect->initEdit(SSIDList[curItem], BSSID[curItem], WPAEType[curItem], WPAEIdent[curItem], WPAEAnonIdent[curItem], WPAECACert[curItem], WPAEClientCert[curItem], WPAEPrivKeyFile[curItem], WPAEPassword[curItem], WPAEKeyMgmt[curItem], WPAEPhase2[curItem]);
+             wifiselect.initEdit(SSIDList[curItem], BSSID[curItem], WPAEType[curItem], WPAEIdent[curItem], WPAEAnonIdent[curItem], WPAECACert[curItem], WPAEClientCert[curItem], WPAEPrivKeyFile[curItem], WPAEPassword[curItem], WPAEKeyMgmt[curItem], WPAEPhase2[curItem]);
           }
 
 
           // Connect our delete signal, which runs before we add a new SSID
-          connect( wifiselect, SIGNAL( signalDeleteSSID(QString) ), this, SLOT( slotRemoveProfileSSID(QString) ) ); 
+          connect( &wifiselect, SIGNAL( signalDeleteSSID(QString) ), this, SLOT( slotRemoveProfileSSID(QString) ) ); 
 
           // Connect our save signals
-          connect( wifiselect, SIGNAL( signalSavedOpen(QString, bool) ), this, SLOT( slotAddNewProfileOpen(QString, bool) ) );
-          connect( wifiselect, SIGNAL( signalSavedWEP( QString, bool, QString, int, bool ) ), this, SLOT( slotAddNewProfileWEP( QString, bool, QString, int, bool) ) );
-          connect( wifiselect, SIGNAL( signalSavedWPA(QString, bool, QString) ), this, SLOT( slotAddNewProfileWPA(QString, bool, QString) ) );
-          connect( wifiselect, SIGNAL( signalSavedWPAE(QString, bool, int, QString, QString, QString, QString, QString, QString, int, int) ), this, SLOT ( slotAddNewProfileWPAE(QString, bool, int, QString, QString, QString, QString, QString, QString, int, int) ) );
+          connect( &wifiselect, SIGNAL( signalSavedOpen(QString, bool) ), this, SLOT( slotAddNewProfileOpen(QString, bool) ) );
+          connect( &wifiselect, SIGNAL( signalSavedWEP( QString, bool, QString, int, bool ) ), this, SLOT( slotAddNewProfileWEP( QString, bool, QString, int, bool) ) );
+          connect( &wifiselect, SIGNAL( signalSavedWPA(QString, bool, QString) ), this, SLOT( slotAddNewProfileWPA(QString, bool, QString) ) );
+          connect( &wifiselect, SIGNAL( signalSavedWPAE(QString, bool, int, QString, QString, QString, QString, QString, QString, int, int) ), this, SLOT ( slotAddNewProfileWPAE(QString, bool, int, QString, QString, QString, QString, QString, QString, int, int) ) );
 
-          wifiselect->exec();
+          wifiselect.exec();
       }
 
 
@@ -738,13 +738,13 @@ void wificonfigwidgetbase::slotAddNewProfileSSID(QString ssidc){
     if(sec.contains("None")){
       slotAddNewProfileOpen(ssidc,false); //call the function to save the variables (no security settings)
     }else if(sec.contains("WEP")){
-     dialogWEP = new wepConfig();
-     connect( dialogWEP, SIGNAL( saved(QString, int, bool) ), this, SLOT( slotWEPSave(QString, int, bool) ) );
-     dialogWEP->exec();
+     wepConfig dialogWEP;
+     connect( &dialogWEP, SIGNAL( saved(QString, int, bool) ), this, SLOT( slotWEPSave(QString, int, bool) ) );
+     dialogWEP.exec();
     }else if(sec.contains("WPA")){ //both WPA and WPA2 encryption
-     dialogWPA = new dialogWPAPersonal();
-     connect( dialogWPA, SIGNAL( saved(QString) ), this, SLOT( slotWPAPSave(QString) ) );
-     dialogWPA->exec();
+     dialogWPAPersonal dialogWPA;
+     connect( &dialogWPA, SIGNAL( saved(QString) ), this, SLOT( slotWPAPSave(QString) ) );
+     dialogWPA.exec();
     }else{
       //Put error handling here
       slotAddNewProfileOpen(ssidc,false); //call the function to save the variables (no security settings)
