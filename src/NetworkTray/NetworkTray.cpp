@@ -154,8 +154,8 @@ QString NetworkTray::getSignalStrengthForIdent( QString ident )
   isig = sig.toDouble(&ok);
   inoise = noise.toDouble(&ok2);
   if ( ok && ok2 ) {
-     percent = qAbs(isig - inoise) * 4;
-  qDebug() << "Sig/Noise Calc:" << tmp << sig << noise << percent;
+     percent = qRound(isig - inoise) * 4;
+  //qDebug() << "Sig/Noise Calc:" << tmp << sig << noise << percent;
      // Sanity check
      if ( percent > 100 )
 	percent = 100;
