@@ -133,28 +133,31 @@ QString NetworkTray::getSignalStrengthForIdent( QString ident )
   // Get the signal strength of this device (User permissions - cannot "up" the device)
   QString command = IFCONFIG + " " + ident + " list scan | grep " + DeviceSSID;
   QString line = getLineFromCommandOutput(command);
-  QString tmp, sig, noise;
   bool ok, ok2;
-  int isig, inoise, percent;
 	
-  tmp = line.simplified();
+  QString tmp = line.simplified();
 
   // Lets find the signal strength / noise variables now
   tmp = tmp.section(" ",4,4);
 
   // Get the noise
-  noise = tmp.section(":",1,-1).simplified();
+  QString noise = tmp.section(":",1,-1).simplified();
   // Get the signal
-  sig = tmp.section(":",0,0).simplified();
+  QString sig = tmp.section(":",0,0).simplified();
 
 
   //qDebug() << "Signal:" << sig << " Noise:" << noise;
 
   // Now figure out the percentage
-  isig = sig.toDouble(&ok);
-  inoise = noise.toDouble(&ok2);
+  int isig = sig.toDouble(&ok);
+  int inoise = noise.toDouble(&ok2);
+  int percent;
   if ( ok && ok2 ) {
-     percent = qRound(isig - inoise) * 4;
+     percent = (isig - inoise) * 4; //Note: These are both typically negative values (-74Db signal, -96Db noise for example)
+     if(percent<0 && (isig>0 || inoise>0) ){
+       //Some weird result - never supposed to be positive values as input
+       percent = qAbs(percent); //just flip the sign for now -the difference between signal/noise is still the key value
+     }
   //qDebug() << "Sig/Noise Calc:" << tmp << sig << noise << percent;
      // Sanity check
      if ( percent > 100 )
