@@ -144,15 +144,23 @@ QString NetworkTray::getSignalStrengthForIdent( QString ident )
   QString noise = tmp.section(":",1,-1).simplified();
   // Get the signal
   QString sig = tmp.section(":",0,0).simplified();
-
-
   //qDebug() << "Signal:" << sig << " Noise:" << noise;
 
   // Now figure out the percentage
   int isig = sig.toDouble(&ok);
   int inoise = noise.toDouble(&ok2);
+
   int percent;
   if ( ok && ok2 ) {
+    //Special case - FreeBSD bug workaround (signal/noise numbers reversed?)
+    if( (isig<inoise) && ( (inoise-isig)>20) ){
+      //if the noise is reported as more than 20dB stronger than the signal, FreeBSD has probably got the Sig/Noise values reversed
+      //signal values are supposed to hang around the ~-120-80 range, and stronger than the noise
+      // The general noise dB is usually -150 to -120
+      int tmp = isig;
+      isig = inoise;
+      inoise = tmp;
+    }
      percent = (isig - inoise) * 4; //Note: These are both typically negative values (-74Db signal, -96Db noise for example)
      if(percent<0 && (isig>0 || inoise>0) ){
        //Some weird result - never supposed to be positive values as input
