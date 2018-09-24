@@ -75,7 +75,7 @@ void wificonfigwidgetbase::slotApply()
 	    ifConfigLine=lineIP->text() + " netmask " + lineNetmask->text() + " ether " + lineMAC->text();
 
     } else {
-	ifConfigLine="DHCP";
+	ifConfigLine="SYNCDHCP";
     } 
 
     // See if we need to enable a country code
