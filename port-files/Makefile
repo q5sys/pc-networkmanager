@@ -19,15 +19,15 @@ CONFLICTS=      pcbsd-utils*
 MAKE_JOBS_UNSAFE=yes
 ONLY_FOR_ARCHS= amd64
 USE_LDCONFIG=   yes
-USE_QT5=        core gui network svg linguist \
+USES=	qt:5 qmake shebangfix tar:xz
+USE_QT=        core gui network svg linguist \
 		buildtools x11extras widgets
-USES=           qmake shebangfix tar:xz
 USE_GL+=	gl
 
 QMAKE_ARGS=     CONFIG+="configure"
 
 USE_GITHUB=	yes
-GH_ACCOUNT=	trueos
+GH_ACCOUNT=	project-trident
 GH_PROJECT=	pc-networkmanager
 GH_TAGNAME=	%%GHTAG%%
 
