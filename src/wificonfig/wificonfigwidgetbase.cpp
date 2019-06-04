@@ -56,19 +56,19 @@ void wificonfigwidgetbase::slotApply()
                     tr("You must enter an IP and Netmask to continue!\n") );
 	    return;
 	}
-	
+
 	if ( ! trueos::Utils::validateIPV4(lineIP->text()) ) {
 	    QMessageBox::warning( this, tr("Warning"),
 	    tr("IP Address is out of range! (") + lineIP->text() + tr(") Fields must be between 0-255.") );
 	   return;
                }
-	
+
 	if ( ! trueos::Utils::validateIPV4(lineNetmask->text()) ) {
 	    QMessageBox::warning( this, tr("Warning"),
 	    tr("Netmask is out of range! (") + lineNetmask->text() + tr(") Fields must be between 0-255.") );
 	   return;
                }
-	
+
 	if ( checkMAC->isChecked() )
 	    ifConfigLine=lineIP->text() + " netmask " + lineNetmask->text();
 	else
@@ -76,7 +76,7 @@ void wificonfigwidgetbase::slotApply()
 
     } else {
 	ifConfigLine="SYNCDHCP";
-    } 
+    }
 
     // See if we need to enable a country code
     if ( groupCountryCode->isChecked() )
@@ -90,9 +90,9 @@ void wificonfigwidgetbase::slotApply()
     updateWPASupp();
 
     // Only updating WPA supp?
-    if (WPAONLY) 
+    if (WPAONLY)
        return;
-    
+
     // If the user disabled the device, do so now
     if ( checkDisableWireless->isChecked() )
     {
@@ -100,7 +100,7 @@ void wificonfigwidgetbase::slotApply()
 	 runCommand("ifconfig " + DeviceName + " down");
          pushApply->setEnabled(false);
 	 return;
-    } 
+    }
 
     // Save the config
     trueos::Utils::setConfFileValue( "/etc/rc.conf", "ifconfig_lagg0", "", -1);
@@ -140,7 +140,7 @@ void wificonfigwidgetbase::updateWPASupp()
 	   if(curItem==0){ listEmpty=true; }
 	   break;
 	 }
-	 
+
          // Fix to prevent kernel panic on net restart
 	 if ( curItem == 0 )
            streamout << "ctrl_interface=/var/run/wpa_supplicant\n\n";
@@ -155,7 +155,7 @@ void wificonfigwidgetbase::updateWPASupp()
            else
              streamout << "network={\n ssid=\"" + SSIDList[curItem] + "\"\n";
 	 }
-        
+
          streamout << " priority=" << 145 - curItem << "\n";
 
 	 if ( ! WPAONLY )
@@ -168,7 +168,7 @@ void wificonfigwidgetbase::updateWPASupp()
            // Ensure we don't end up with invalid key index
 	   if ( WEPIndex[curItem] !=0 && WEPIndex[curItem] !=1 && WEPIndex[curItem] !=2 && WEPIndex[curItem] !=3 )
 	      WEPIndex[curItem] = 0;
-          
+
            streamout << " key_mgmt=NONE\n";
            streamout << " wep_tx_keyidx=" + tmp.setNum(WEPIndex[curItem]) + "\n";
            // Check if we are using a plaintext WEP or not
@@ -179,7 +179,7 @@ void wificonfigwidgetbase::updateWPASupp()
 
          } else if (SSIDEncType[curItem] == WPA_ENCRYPTION ) {
 
-            streamout << " psk=\"" + WPAPersonalKey[curItem] + "\"\n";	
+            streamout << " psk=\"" + WPAPersonalKey[curItem] + "\"\n";
 
          } else if (SSIDEncType[curItem] == WPAE_ENCRYPTION ) {
 	    QString keyType;
@@ -228,7 +228,7 @@ void wificonfigwidgetbase::updateWPASupp()
             default: // comboPhase2 Itemindex 0
               streamout << " phase2=\"auth=MD5\"\n";
           }
-	  
+
 	    } else if (WPAEType[curItem] == 3) {
               streamout << " proto=RSN\n key_mgmt=" << keyType << "\n eap=PEAP\n";
 	      streamout << " identity=\"" + WPAEIdent[curItem] + "\"\n";
@@ -259,14 +259,14 @@ void wificonfigwidgetbase::updateWPASupp()
        } // End of for loop
 
        fileout.close();
-    } 
+    }
 
     // If no networks, clear out WPA supplicant.conf and reset rc.conf
     if ( listEmpty  && ! WPAONLY ){
        fileout.remove();
        trueos::Utils::setConfFileValue( "/etc/rc.conf", "ifconfig_lagg0", "", -1);
        trueos::Utils::setConfFileValue( "/etc/rc.conf", "ifconfig_" + DeviceName, "ifconfig_" + DeviceName + "=\"DHCP\"");
-    }  
+    }
 
 }
 
@@ -278,21 +278,21 @@ void wificonfigwidgetbase::slotCheckDHCPBox()
    } else {
 	groupBoxIP->setEnabled(true);
    }
-   
+
     pushApply->setEnabled(true);
 }
 
 
 // Function which is called at the program init
 void wificonfigwidgetbase::setDevice( QString Device )
-{ 
-    
+{
+
   // Connect our add / remove buttons for wifi
-  connect( pushDown, SIGNAL( clicked() ), this, SLOT( slotMoveDown() ) ); 
-  connect( pushUp, SIGNAL( clicked() ), this, SLOT( slotMoveUp() ) ); 
-  connect( pushAddWifi, SIGNAL( clicked() ), this, SLOT( slotAddNewProfile() ) ); 
-  connect( pushEditWifi, SIGNAL( clicked() ), this, SLOT( slotEditProfile() ) ); 
-  connect( pushRemoveWifi, SIGNAL( clicked() ), this, SLOT( slotRemoveProfile() ) ); 
+  connect( pushDown, SIGNAL( clicked() ), this, SLOT( slotMoveDown() ) );
+  connect( pushUp, SIGNAL( clicked() ), this, SLOT( slotMoveUp() ) );
+  connect( pushAddWifi, SIGNAL( clicked() ), this, SLOT( slotAddNewProfile() ) );
+  connect( pushEditWifi, SIGNAL( clicked() ), this, SLOT( slotEditProfile() ) );
+  connect( pushRemoveWifi, SIGNAL( clicked() ), this, SLOT( slotRemoveProfile() ) );
   connect( pushRescan, SIGNAL( clicked() ), this, SLOT( slotRescan() ) );
   connect( pushAddHidden, SIGNAL( clicked() ), this, SLOT( slotAddHiddenProfile() ) );
   connect( checkDHCP, SIGNAL( clicked() ), this, SLOT( slotCheckDHCPBox() ) );
@@ -304,14 +304,14 @@ void wificonfigwidgetbase::setDevice( QString Device )
   // Center the dialog window
   QDesktopWidget *d = QApplication::desktop();
   move(d->width() / 3, d->height() / 4);
- 
+
   // Connect the slot to refresh
   QTimer::singleShot(100,  this,  SLOT(slotFinishLoading() ) );
-  
+
   // Check if we are using the lagg0 device
   QSettings settings("PCBSD");
   usingLagg = settings.value("/pc-netmanager/useLagg", false).toBool();
- 
+
   //Load the available wifi access points
   slotRescan();
 
@@ -360,13 +360,13 @@ void wificonfigwidgetbase::loadCountryCodes()
 void wificonfigwidgetbase::slotRescan()
 {
     QString strength, ssid, security, FileLoad;
-    QStringList ifconfout, ifline;    
+    QStringList ifconfout, ifline;
     int foundItem = 0;
 
     // Clear the list box and disable the add button
     listNewWifi->clear();
     pushAddWifi->setEnabled(false);
-            
+
     // Start the scan and get the output
     ifconfout = trueos::Utils::runShellCommand("ifconfig -v " + DeviceName + " up list scan");
 
@@ -402,7 +402,7 @@ void wificonfigwidgetbase::slotRescan()
       if( !duplicateSSID ){
         //Add the wifi access point to the list
         listNewWifi->addItem(new QListWidgetItem(QIcon(FileLoad), ssid + " (signal: " +strength + ")") );
-        foundItem = 1; //set the flag for wifi signals found 
+        foundItem = 1; //set the flag for wifi signals found
       }else{
         //Check if the new signal strength is greater, replace if it is
         QString oldStrength = listNewWifi->item(dupRow)->text();
@@ -414,9 +414,9 @@ void wificonfigwidgetbase::slotRescan()
           listNewWifi->item(dupRow)->setText( ssid+" (signal: "+strength+")" );
 	}
       }
-      } //End of check for empty SSID entry points 
+      } //End of check for empty SSID entry points
     }
-    
+
     if ( foundItem == 1 ){
       listNewWifi->setCurrentRow(-1);
       pushAddWifi->setEnabled(true);
@@ -446,9 +446,9 @@ void wificonfigwidgetbase::slotMoveUp()
           {
             // We found the ssid we need to move up
             tmpString = SSIDList[i-1];
-            SSIDList[i-1] = SSIDList[i] ; 
-            SSIDList[i] = tmpString; 
-            
+            SSIDList[i-1] = SSIDList[i] ;
+            SSIDList[i] = tmpString;
+
             tmpInt = SSIDEncType[i-1];
             SSIDEncType[i-1] = SSIDEncType[i];
             SSIDEncType[i] = tmpInt;
@@ -545,9 +545,9 @@ void wificonfigwidgetbase::slotMoveDown()
           {
             // We found the ssid we need to move down
             tmpString = SSIDList[i+1];
-            SSIDList[i+1] = SSIDList[i] ; 
-            SSIDList[i] = tmpString; 
-            
+            SSIDList[i+1] = SSIDList[i] ;
+            SSIDList[i] = tmpString;
+
             tmpInt = SSIDEncType[i+1];
             SSIDEncType[i+1] = SSIDEncType[i];
             SSIDEncType[i] = tmpInt;
@@ -639,7 +639,7 @@ void wificonfigwidgetbase::slotEditProfile()
           if ( SSIDList[i] == editSSID )
           {
             // We found the ssid we need to edit
-            foundSSID=true; 
+            foundSSID=true;
             curItem=i;
             break;
           }
@@ -653,7 +653,7 @@ void wificonfigwidgetbase::slotEditProfile()
           wifiselect.init(DeviceName);
           wifiselect.setWPAOnly(WPAONLY);
 
-          // Check the type of SSID this is, and issue appropriate edit 
+          // Check the type of SSID this is, and issue appropriate edit
           if ( SSIDEncType[curItem] == NO_ENCRYPTION) {
              wifiselect.initEdit(SSIDList[curItem], BSSID[curItem]);
           }
@@ -669,7 +669,7 @@ void wificonfigwidgetbase::slotEditProfile()
 
 
           // Connect our delete signal, which runs before we add a new SSID
-          connect( &wifiselect, SIGNAL( signalDeleteSSID(QString) ), this, SLOT( slotRemoveProfileSSID(QString) ) ); 
+          connect( &wifiselect, SIGNAL( signalDeleteSSID(QString) ), this, SLOT( slotRemoveProfileSSID(QString) ) );
 
           // Connect our save signals
           connect( &wifiselect, SIGNAL( signalSavedOpen(QString, bool) ), this, SLOT( slotAddNewProfileOpen(QString, bool) ) );
@@ -699,7 +699,7 @@ void wificonfigwidgetbase::slotRemoveProfile()
       pushApply->setEnabled(true);
 
     }
-  
+
 }
 
 void wificonfigwidgetbase::slotAddHiddenProfile(){
@@ -721,10 +721,10 @@ void wificonfigwidgetbase::slotAddNewProfile()
     slotAddNewProfileSSID(ssidc);
    }else{
      QMessageBox::warning(this,"No Wifi Point Selected","Please select a wireless network to add");
-   }    
+   }
 }
 
-void wificonfigwidgetbase::slotAddNewProfileSSID(QString ssidc){ 
+void wificonfigwidgetbase::slotAddNewProfileSSID(QString ssidc){
   /*  ssidc - SSID of the network to add
   */
 
@@ -778,7 +778,7 @@ void wificonfigwidgetbase::slotWPAPSave(QString newkey)
 
 void wificonfigwidgetbase::runCommand( QString Command )
 {
-        FILE *file = popen(Command.toLatin1(),"r"); 
+        FILE *file = popen(Command.toLatin1(),"r");
 	pclose(file);
 }
 
@@ -794,9 +794,9 @@ void wificonfigwidgetbase::slotRemoveProfileSSID(QString RemoveSSID)
        foundSSID=true;
      }
 
-     if(foundSSID) 
+     if(foundSSID)
      {
-       SSIDList[remItem] = SSIDList[remItem+1] ; 
+       SSIDList[remItem] = SSIDList[remItem+1] ;
        SSIDEncType[remItem] = SSIDEncType[remItem+1];
        BSSID[remItem] = BSSID[remItem+1];
        WEPKey[remItem] = WEPKey[remItem+1];
@@ -821,7 +821,7 @@ void wificonfigwidgetbase::slotRemoveProfileSSID(QString RemoveSSID)
 
    }
 
-   
+
 }
 
 void wificonfigwidgetbase::slotAddNewProfileOpen(QString SSID, bool isBSSID)
@@ -846,7 +846,7 @@ void wificonfigwidgetbase::slotAddNewProfileOpen(QString SSID, bool isBSSID)
 
     SSIDList[curItem] = SSID;
     BSSID[curItem] = isBSSID;
-    
+
     // Refresh the SSID listbox and enable the apply button
     slotRefreshSSIDList();
     slotCheckGlobalText();
@@ -871,7 +871,7 @@ void wificonfigwidgetbase::slotAddNewProfileWEP( QString SSID, bool isBSSID, QSt
    }
 
     // Find which current item we are working on
-  
+
     SSIDList[curItem] = SSID;
     SSIDEncType[curItem] = WEP_ENCRYPTION;
     BSSID[curItem] = isBSSID;
@@ -909,7 +909,7 @@ void wificonfigwidgetbase::slotAddNewProfileWPA( QString SSID, bool isBSSID, QSt
    SSIDEncType[curItem] = WPA_ENCRYPTION;
    BSSID[curItem] = isBSSID;
    WPAPersonalKey[curItem] = newKey;
-   
+
    // Refresh the SSID listbox and enable the apply button
    slotRefreshSSIDList();
    slotCheckGlobalText();
@@ -957,14 +957,14 @@ void wificonfigwidgetbase::slotAddNewProfileWPAE( QString SSID, bool isBSSID, in
 
 void wificonfigwidgetbase::slotCheckDisabled()
 {
-	if ( checkDisableWireless->isChecked() ) 
+	if ( checkDisableWireless->isChecked() )
         {
 	    tabMainWidget->setEnabled(false);
 	} else {
 	    tabMainWidget->setEnabled(true);
 	}
-	
-	 pushApply->setEnabled(true); 
+
+	 pushApply->setEnabled(true);
 }
 
 
@@ -992,22 +992,22 @@ void wificonfigwidgetbase::slotMACClicked()
 
 QString wificonfigwidgetbase::getLineFromCommandOutput( QString command )
 {
-	FILE *file = popen(command.toLatin1(),"r"); 
+	FILE *file = popen(command.toLatin1(),"r");
 
 	char buffer[100];
-	
-	QString line = ""; 
+
+	QString line = "";
 	char firstChar;
-	
+
 	if ((firstChar = fgetc(file)) != -1){
 		line += firstChar;
 		line += fgets(buffer,100,file);
 	}
-	
-	
+
+
 	pclose(file);
-	
-	
+
+
 	return line;
 }
 
@@ -1117,7 +1117,7 @@ void wificonfigwidgetbase::loadInfo()
   tmp = getMediaForIdent(DeviceName);
   tmp.truncate(20);
   textMedia->setText(tmp);
-  
+
   // Get the packet status for this device
   textPacketsIn->setText(getInPacketsForIdent( DeviceName) );
   textPacketsInErrors->setText( getInErrorsForIdent( DeviceName) );
@@ -1154,7 +1154,7 @@ void wificonfigwidgetbase::slotFinishLoading()
       checkDHCP->setChecked(true);
       lineNetmask->setText("255.255.255.0");
       slotCheckDHCPBox();
-      
+
             // Look for the mac address change
 	if ( tmp.indexOf("ether") != -1 ) {
 		tmp2 = tmp;
@@ -1165,7 +1165,7 @@ void wificonfigwidgetbase::slotFinishLoading()
 		lineMAC->setText(tmp2);
 		checkMAC->setChecked(false);
 		groupMAC->setEnabled(true);
-	} 
+	}
 
 
    } else {
@@ -1203,7 +1203,7 @@ void wificonfigwidgetbase::slotFinishLoading()
           }
       }
    }
-   
+
    // Look for a country code
    tmp = trueos::Utils::getConfFileValue( "/etc/rc.conf", "ifconfig_" + DeviceName + "=", 1 );
    if ( tmp.indexOf("country ") != -1 ) {
@@ -1244,11 +1244,11 @@ void wificonfigwidgetbase::slotFinishLoading()
 		BSSID[curItem] = true;
 		SSIDEncType[curItem]=NO_ENCRYPTION;
    	    }
-	
-	
+
+
  	    // Check if we are using a WEP key for this network
 	    if ( line.indexOf("wep_key") != -1 )
-	    {		       
+	    {
                 if (line.indexOf("\"") != -1 )
                 {
 		   tmp2 = line.remove(0, line.indexOf("\"") + 1 );
@@ -1265,7 +1265,7 @@ void wificonfigwidgetbase::slotFinishLoading()
 
            // Check for the WEP tx key id
 	   if ( line.indexOf("wep_tx_keyidx") != -1 )
-	   {		       
+	   {
 		tmp2 = line.remove(0, line.indexOf("wep_tx_keyidx") +1 );
 		// Save the keycode
 		tmp2.truncate(tmp2.indexOf("=") );
@@ -1275,22 +1275,22 @@ void wificonfigwidgetbase::slotFinishLoading()
 		    WEPIndex[curItem]++;
 		}
 	   }
-		  
+
            // Check if we are using WPA-Personal
 	   if ( line.indexOf("psk=") != -1 )
-	   {		       
+	   {
 		tmp2 = line.remove(0, line.indexOf("\"") + 1 );
 		tmp2.truncate( tmp2.indexOf("\"") );
-			 
-			
+
+
     	        // Save the keycode
 		WPAPersonalKey[curItem] = tmp2;
 		SSIDEncType[curItem]=WPA_ENCRYPTION;
 	   }
-		    
+
 	   // Check if we are using WPA-Enterprise
            if ( line.indexOf("eap=") != -1 )
-	   {		       
+	   {
 		tmp2 = line.remove(0, line.indexOf("=") + 1 );
 
 		//Check to see whic type of WPA-Ent we are using
@@ -1301,20 +1301,21 @@ void wificonfigwidgetbase::slotFinishLoading()
 		} else if (tmp2 == "PEAP" ) {
 		    WPAEType[curItem] = 3;
 		}
-			
+
 		SSIDEncType[curItem]=WPAE_ENCRYPTION;
 	   }
-		    
-           // Check for a identity= line
-           if ( line.indexOf("identity=") != -1 )
-	   {		       
+
+           // Check for a identity= line and not anonymous_identity
+           if ( line.indexOf("identity=") != -1 and
+                line.indexOf("anonymous_identity=") == -1 )
+	   {
 		tmp2 = line.remove(0, line.indexOf("\"") + 1 );
 		tmp2.truncate( tmp2.indexOf("\"") );
 
 		// Save the keycode
 		WPAEIdent[curItem] = tmp2;
 	   }
-		    
+
            // Check for a anonymous_identity= line
            if ( line.indexOf("anonymous_identity=") != -1 )
        {
@@ -1327,37 +1328,37 @@ void wificonfigwidgetbase::slotFinishLoading()
 
 	   // Check for a ca_cert= line
            if ( line.indexOf("ca_cert=") != -1 )
-	   {		       
+	   {
 		tmp2 = line.remove(0, line.indexOf("\"") + 1 );
 		tmp2.truncate( tmp2.indexOf("\"") );
 
 		// Save the keycode
 		WPAECACert[curItem] = tmp2;
 	   }
-	
+
 	   // Check for a client_cert= line
 	   if ( line.indexOf("client_cert=") != -1 )
-	   {		       
+	   {
 		tmp2 = line.remove(0, line.indexOf("\"") + 1 );
 		tmp2.truncate( tmp2.indexOf("\"") );
 
 		// Save the keycode
 		WPAEClientCert[curItem] = tmp2;
 	   }
-		    
+
           // Check for a private_key= line
            if ( line.indexOf("private_key=") != -1 )
-	   {		       
+	   {
 		tmp2 = line.remove(0, line.indexOf("\"") + 1 );
 		tmp2.truncate( tmp2.indexOf("\"") );
 
 		// Save the keycode
 		WPAEPrivKeyFile[curItem] = tmp2;
 	   }
-	    
+
           // Check for a private_key_passwd= line
           if ( line.indexOf("private_key_passwd=") != -1 )
-          {		       
+          {
 		tmp2 = line.remove(0, line.indexOf("\"") + 1 );
 		tmp2.truncate( tmp2.indexOf("\"") );
 
@@ -1370,7 +1371,7 @@ void wificonfigwidgetbase::slotFinishLoading()
 		WPAEKeyMgmt[curItem] = KEYWPAEAP;
           if ( line.indexOf("key_mgmt=IEEE8021X") != -1 )
 		WPAEKeyMgmt[curItem] = KEY8021X;
-	
+
           // Figure out the phase2
           if ( line.indexOf("phase2=\"auth=MD5\"") != -1 )
 		WPAEPhase2[curItem] = KEYPHASE2MD5;
@@ -1389,7 +1390,7 @@ void wificonfigwidgetbase::slotFinishLoading()
 
          // Check for a private_key_passwd= line
          if ( line.indexOf("password=") != -1 )
-         {		       
+         {
 		tmp2 = line.remove(0, line.indexOf("\"") + 1 );
 		tmp2.truncate( tmp2.indexOf("\"") );
 
@@ -1403,12 +1404,12 @@ void wificonfigwidgetbase::slotFinishLoading()
 
 
    // Refresh the ssid profile list
-   slotRefreshSSIDList();  
+   slotRefreshSSIDList();
 
    // Load the list of country codes we can set
    loadCountryCodes();
 
-   
+
    // Start loading the info tab
    loadInfo();
 
@@ -1451,15 +1452,15 @@ QString wificonfigwidgetbase::getIPv6ForIdent( QString ident )
 	QString command = "nice ifconfig " +ident + " | grep \"inet6 \"";
 	QString inputLine = getLineFromCommandOutput(command);
 	QString ip= "";
-	
+
 	if (inputLine != "" && inputLine.indexOf("inet6 ") != -1){
-		
+
 		ip = inputLine.remove(0, inputLine.indexOf("inet6 ") + 5);
 		ip.truncate(ip.indexOf("%"));
-		
-		
+
+
 	}
-	
+
 	return ip;
 }
 
@@ -1469,12 +1470,12 @@ QString wificonfigwidgetbase::getGatewayForIdent( QString ident )
         QString command = "nice netstat -n -r | grep \"default\" | grep " + ident;
 	QString inputLine = getLineFromCommandOutput(command);
 	QString packets = "";
-	
+
 	if (inputLine != "" ){
 		inputLine = inputLine.simplified();
 		packets = inputLine.section(' ', 1, 1 );
 	}
-	
+
 	return packets;
 }
 
@@ -1484,11 +1485,11 @@ QString wificonfigwidgetbase::getMediaForIdent( QString ident )
     	QString command = "nice ifconfig " +ident + " | grep media:";
 	QString inputLine = getLineFromCommandOutput(command);
 	QString status = "";
-	
+
 	if (inputLine != "" && inputLine.indexOf("media:") != -1){
    	  status = inputLine.remove(0, inputLine.indexOf("media:") + 7);
 	}
-	
+
 	return status;
 }
 
