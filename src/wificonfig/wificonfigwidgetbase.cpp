@@ -1305,8 +1305,9 @@ void wificonfigwidgetbase::slotFinishLoading()
 		SSIDEncType[curItem]=WPAE_ENCRYPTION;
 	   }
 
-           // Check for a identity= line
-           if ( line.indexOf("identity=") != -1 )
+           // Check for a identity= line and not anonymous_identity
+           if ( line.indexOf("identity=") != -1 and
+                line.indexOf("anonymous_identity=") == -1 )
 	   {
 		tmp2 = line.remove(0, line.indexOf("\"") + 1 );
 		tmp2.truncate( tmp2.indexOf("\"") );
