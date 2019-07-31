@@ -16,12 +16,8 @@ DNSList::SDNSEntry default_servers_v4[] =
     {"208.67.220.220", "OpenDNS", ""},
     {"8.8.8.8", "Google", "us"},
     {"8.8.4.4", "Google", "us"},
-    {"202.83.95.227", "OpenNIC", "au"},
     {"178.63.26.173", "OpenNIC", "de"},
-    {"127.110.120.30", "OpenNIC", "nz"},
-    {"189.16.173.11", "OpenNIC", "uk"},
-    {"69.164.208.50", "OpenNIC", "us"},
-};
+ };
 
 const int default_servers_v4_size = sizeof(default_servers_v4)/sizeof(DNSList::SDNSEntry);
 
